@@ -4,24 +4,29 @@ const Button = ({ handleClick, text }) => {
 	return <button onClick={handleClick}>{text}</button>;
 };
 
-const StatisticLine = ({text, value}) => {
+const StatisticLine = ({ text, value }) => {
 	return (
-		<>{text} {value} <br /></>
-	)
-}
+		<tr>
+			<td>{text}</td>
+			<td>{value}</td>
+		</tr>
+	);
+};
 
 const Statistics = ({ good, neutral, bad, total, average, positive }) => {
 	return total === 0 ? (
 		<p>No feedback given</p>
 	) : (
-		<div>
-			<StatisticLine text={'good'} value={good}/>
-			<StatisticLine text={'neutral'} value={neutral}/>
-			<StatisticLine text={'bad'} value={bad}/>
-			<StatisticLine text={'total'} value={total}/>
-			<StatisticLine text={'average'} value={average}/>
-			<StatisticLine text={'positive'} value={positive}/>
-		</div>
+		<table>
+			<tbody>
+			<StatisticLine text={'good'} value={good} />
+			<StatisticLine text={'neutral'} value={neutral} />
+			<StatisticLine text={'bad'} value={bad} />
+			<StatisticLine text={'total'} value={total} />
+			<StatisticLine text={'average'} value={average} />
+			<StatisticLine text={'positive'} value={positive} />
+			</tbody>
+		</table>
 	);
 };
 
@@ -48,11 +53,15 @@ const App = () => {
 	const average =
 		allReviews.length === 0
 			? 'N/A'
-			: allReviews.reduce((acc, current) => acc + current, 0) /
-			  allReviews.length;
+			: (
+					allReviews.reduce((acc, current) => acc + current, 0) /
+					allReviews.length
+			  ).toFixed(2);
 
 	const positive =
-		allReviews.length === 0 ? 'N/A' : `${(good / allReviews.length) * 100} %`;
+		allReviews.length === 0
+			? 'N/A'
+			: `${((good / allReviews.length) * 100).toFixed(2)} %`;
 
 	return (
 		<div>

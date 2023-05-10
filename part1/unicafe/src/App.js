@@ -4,10 +4,15 @@ const Button = ({ handleClick, text }) => {
 	return <button onClick={handleClick}>{text}</button>;
 };
 
-const Stats = ({ label, stats }) => {
+const Statistics = ({ good, neutral, bad, total, average, positive }) => {
 	return (
 		<p>
-			{label} {stats}
+			good: {good} <br />
+			neutral: {neutral} <br />
+			bad: {bad} <br />
+			total: {total} <br />
+			average: {average} <br />
+			positive: {positive} <br />
 		</p>
 	);
 };
@@ -19,6 +24,7 @@ const App = () => {
 	const [allReviews, setAllReviews] = useState([]);
 
 	const incrementGood = () => {
+		// setAllReviews(allReviews.concat(1));
 		setAllReviews((prevReviews) => [...prevReviews, 1]);
 		setGood(good + 1);
 	};
@@ -31,6 +37,15 @@ const App = () => {
 		setBad(bad + 1);
 	};
 
+	const average =
+		allReviews.length === 0
+			? 'N/A'
+			: allReviews.reduce((acc, current) => acc + current, 0) /
+			  allReviews.length;
+
+	const positive =
+		allReviews.length === 0 ? 'N/A' : `${(good / allReviews.length) * 100} %`;
+
 	return (
 		<div>
 			<h2>give feedback</h2>
@@ -38,26 +53,13 @@ const App = () => {
 			<Button handleClick={incrementNeutral} text={'neutral'} />
 			<Button handleClick={incrementBad} text={'bad'} />
 			<h2>statistics</h2>
-			<Stats label={'good'} stats={good} />
-			<Stats label={'neutral'} stats={neutral} />
-			<Stats label={'bad'} stats={bad} />
-			<Stats label={'total'} stats={allReviews.length} />
-			<Stats
-				label={'average'}
-				stats={
-					allReviews.length === 0
-						? 'N/A'
-						: allReviews.reduce((acc, current) => acc + current, 0) /
-						  allReviews.length
-				}
-			/>
-			<Stats
-				label={'positive'}
-				stats={
-					allReviews.length === 0
-						? 'N/A'
-						: `${(good / allReviews.length) * 100} %`
-				}
+			<Statistics
+				good={good}
+				neutral={neutral}
+				bad={bad}
+				total={allReviews.length}
+				average={average}
+				positive={positive}
 			/>
 		</div>
 	);

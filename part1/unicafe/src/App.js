@@ -5,7 +5,9 @@ const Button = ({ handleClick, text }) => {
 };
 
 const Statistics = ({ good, neutral, bad, total, average, positive }) => {
-	return (
+	return total === 0 ? (
+		<p>No feedback given</p>
+	) : (
 		<p>
 			good: {good} <br />
 			neutral: {neutral} <br />

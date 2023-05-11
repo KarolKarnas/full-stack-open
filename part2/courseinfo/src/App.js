@@ -2,8 +2,8 @@ const Header = ({ course }) => {
 	return <h1>{course.name}</h1>;
 };
 
-const Total = (props) => {
-	return <strong>Total of {props.sumOfExercises} exercises</strong>;
+const Total = ({ sumOfExercises }) => {
+	return <strong>Total of {sumOfExercises} exercises</strong>;
 };
 
 const Content = ({ course }) => {

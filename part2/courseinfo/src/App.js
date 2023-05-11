@@ -2,17 +2,21 @@ const Header = ({ course }) => {
 	return <h1>{course.name}</h1>;
 };
 
-// const Total = (props) => {
-//   return <p>Number of exercises {props.sumOfExercises}</p>
-// }
+const Total = (props) => {
+	return <strong>Total of {props.sumOfExercises} exercises</strong>;
+};
 
 const Content = ({ course }) => {
-	// console.log(course);
+	const sumOfExercises = course.parts.reduce(
+		(acc, currentPart) => acc + currentPart.exercises,
+		0
+	);
 	return (
 		<div>
 			{course.parts.map((part) => (
 				<Part key={part.id} name={part.name} exercises={part.exercises} />
 			))}
+			<Total sumOfExercises={sumOfExercises} />
 		</div>
 	);
 };
@@ -53,6 +57,11 @@ const App = () => {
 				name: 'State of a component',
 				exercises: 14,
 				id: 3,
+			},
+			{
+				name: 'Redux',
+				exercises: 11,
+				id: 4,
 			},
 		],
 	};

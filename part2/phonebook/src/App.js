@@ -9,7 +9,14 @@ const App = () => {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-    const newPerson = {name: newName}
+		if (newName === '') return alert(`Can't add an empty string to phonebook`);
+		if (
+			persons.findIndex(
+				(person) => person.name.toLowerCase() === newName.toLowerCase()
+			) !== -1
+		)
+			return alert(`${newName} is already added to phonebook`);
+		const newPerson = { name: newName };
 		setPersons([...persons, newPerson]);
 		setNewName('');
 	};

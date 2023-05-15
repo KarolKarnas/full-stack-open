@@ -81,13 +81,14 @@ const App = () => {
 		const newPerson = {
 			name: newName,
 			number: newNumber,
-			id: persons.length + 1,
 		};
-		setPersons([...persons, newPerson]);
-		setPersonsToShow([...persons, newPerson]);
-		setNewName('');
-		setNewNumber('');
-		setNewFilter('');
+		axios.post('http://localhost:3001/persons', newPerson).then((response) => {
+			setPersons([...persons, response.data]);
+			setPersonsToShow([...persons, response.data]);
+			setNewName('');
+			setNewNumber('');
+			setNewFilter('');
+		});
 	};
 
 	const handleChangeName = (e) => {

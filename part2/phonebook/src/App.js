@@ -1,6 +1,14 @@
 import { useState, useEffect } from 'react';
 import personService from './services/persons';
 
+const Notification = ({ message }) => {
+	if (message === null) {
+		return null;
+	}
+
+	return <div className='success'>{message}</div>;
+};
+
 const Filter = ({ newFilter, handleChangeFilter }) => {
 	return (
 		<div>
@@ -61,6 +69,7 @@ const App = () => {
 	const [newNumber, setNewNumber] = useState('');
 	const [newFilter, setNewFilter] = useState('');
 	const [personsToShow, setPersonsToShow] = useState(persons);
+	const [successMessage, setSuccessMessage] = useState(null);
 
 	useEffect(() => {
 		personService.getAll().then((initialPersons) => {
@@ -81,25 +90,32 @@ const App = () => {
 		const indexNumber = persons.findIndex(
 			(person) => person.number === newNumber
 		);
-		
+
 		if (indexNumber !== -1)
-		return alert(`${newNumber} is already added to phonebook`);
-		
+			return alert(`${newNumber} is already added to phonebook`);
+
 		const newPerson = {
 			name: newName,
 			number: newNumber,
 		};
 
 		if (indexName !== -1) {
-			window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`);
+			window.confirm(
+				`${newName} is already added to phonebook, replace the old number with a new one?`
+			);
 			const id = persons[indexName].id;
 			personService.update(id, newPerson).then(() => {
 				personService.getAll().then((updatePersons) => {
 					setPersons(updatePersons);
 					setPersonsToShow(updatePersons);
+					setSuccessMessage(`${newPerson.name} number edited`);
+
+					setTimeout(() => {
+						setSuccessMessage(null);
+					}, 2000);
 				});
 			});
-			return
+			return;
 		}
 
 		personService.create(newPerson).then((returnedPerson) => {
@@ -108,6 +124,11 @@ const App = () => {
 			setNewName('');
 			setNewNumber('');
 			setNewFilter('');
+			setSuccessMessage(`${newPerson.name} added`);
+
+			setTimeout(() => {
+				setSuccessMessage(null);
+			}, 2000);
 		});
 	};
 
@@ -128,12 +149,17 @@ const App = () => {
 		setNewFilter(filterValue);
 	};
 
-	const handleDeletePerson = (id, person) => {
-		if (window.confirm(`Delete ${person}?`)) {
+	const handleDeletePerson = (id, name) => {
+		if (window.confirm(`Delete ${name}?`)) {
 			personService.deleteMe(id).then(() => {
 				personService.getAll().then((updatePersons) => {
 					setPersons(updatePersons);
 					setPersonsToShow(updatePersons);
+					setSuccessMessage(`${name} deleted`);
+
+			setTimeout(() => {
+				setSuccessMessage(null);
+			}, 2000);
 				});
 			});
 		}
@@ -142,6 +168,7 @@ const App = () => {
 	return (
 		<div>
 			<h2>Phonebook</h2>
+			<Notification message={successMessage} />
 			<Filter newFilter={newFilter} handleChangeFilter={handleChangeFilter} />
 			<h2>add a new</h2>
 			<PersonForm

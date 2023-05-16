@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import personService from './services/persons';
 
 const Filter = ({ newFilter, handleChangeFilter }) => {
 	return (
@@ -32,17 +32,26 @@ const PersonForm = ({
 	);
 };
 
-const PersonDetails = ({ person }) => {
+const PersonDetails = ({ person, handleDeletePerson }) => {
 	return (
-		<p>
-			{person.name} {person.number}
-		</p>
+		<>
+			<p>
+				{person.name} {person.number}{' '}
+				<button onClick={() => handleDeletePerson(person.id, person.name)}>
+					Delete
+				</button>
+			</p>
+		</>
 	);
 };
 
-const Persons = ({ personsToShow }) => {
+const Persons = ({ personsToShow, handleDeletePerson }) => {
 	return personsToShow.map((person) => (
-		<PersonDetails key={person.id} person={person} />
+		<PersonDetails
+			key={person.id}
+			person={person}
+			handleDeletePerson={handleDeletePerson}
+		/>
 	));
 };
 
@@ -54,12 +63,11 @@ const App = () => {
 	const [personsToShow, setPersonsToShow] = useState(persons);
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/persons').then((response) => {
-			setPersons(response.data);
-			setPersonsToShow(response.data);
+		personService.getAll().then((initialPersons) => {
+			setPersons(initialPersons);
+			setPersonsToShow(initialPersons);
 		});
 	}, []);
-
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		if (newName === '') return alert(`Can't add an empty name to phonebook`);
@@ -73,18 +81,30 @@ const App = () => {
 		const indexNumber = persons.findIndex(
 			(person) => person.number === newNumber
 		);
-		if (indexName !== -1)
-			return alert(`${newName} is already added to phonebook`);
+		
 		if (indexNumber !== -1)
-			return alert(`${newNumber} is already added to phonebook`);
-
+		return alert(`${newNumber} is already added to phonebook`);
+		
 		const newPerson = {
 			name: newName,
 			number: newNumber,
 		};
-		axios.post('http://localhost:3001/persons', newPerson).then((response) => {
-			setPersons([...persons, response.data]);
-			setPersonsToShow([...persons, response.data]);
+
+		if (indexName !== -1) {
+			window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`);
+			const id = persons[indexName].id;
+			personService.update(id, newPerson).then(() => {
+				personService.getAll().then((updatePersons) => {
+					setPersons(updatePersons);
+					setPersonsToShow(updatePersons);
+				});
+			});
+			return
+		}
+
+		personService.create(newPerson).then((returnedPerson) => {
+			setPersons([...persons, returnedPerson]);
+			setPersonsToShow([...persons, returnedPerson]);
 			setNewName('');
 			setNewNumber('');
 			setNewFilter('');
@@ -108,6 +128,17 @@ const App = () => {
 		setNewFilter(filterValue);
 	};
 
+	const handleDeletePerson = (id, person) => {
+		if (window.confirm(`Delete ${person}?`)) {
+			personService.deleteMe(id).then(() => {
+				personService.getAll().then((updatePersons) => {
+					setPersons(updatePersons);
+					setPersonsToShow(updatePersons);
+				});
+			});
+		}
+	};
+
 	return (
 		<div>
 			<h2>Phonebook</h2>
@@ -121,7 +152,10 @@ const App = () => {
 				handleChangeNumber={handleChangeNumber}
 			/>
 			<h2>Numbers</h2>
-			<Persons personsToShow={personsToShow} />
+			<Persons
+				personsToShow={personsToShow}
+				handleDeletePerson={handleDeletePerson}
+			/>
 		</div>
 	);
 };

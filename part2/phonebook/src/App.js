@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import personService from './services/persons';
 
-const Notification = ({ message }) => {
-	if (message === null) {
+const Notification = ({ successMessage, errorMessage }) => {
+	if (successMessage === null && errorMessage === null) {
 		return null;
+	} else if (successMessage) {
+		return <div className='success'>{successMessage}</div>;
+	} else if (errorMessage) {
+		return <div className='error'>{errorMessage}</div>;
 	}
-
-	return <div className='success'>{message}</div>;
 };
 
 const Filter = ({ newFilter, handleChangeFilter }) => {
@@ -70,6 +72,7 @@ const App = () => {
 	const [newFilter, setNewFilter] = useState('');
 	const [personsToShow, setPersonsToShow] = useState(persons);
 	const [successMessage, setSuccessMessage] = useState(null);
+	const [errorMessage, setErrorMessage] = useState(null);
 
 	useEffect(() => {
 		personService.getAll().then((initialPersons) => {
@@ -104,17 +107,34 @@ const App = () => {
 				`${newName} is already added to phonebook, replace the old number with a new one?`
 			);
 			const id = persons[indexName].id;
-			personService.update(id, newPerson).then(() => {
-				personService.getAll().then((updatePersons) => {
-					setPersons(updatePersons);
-					setPersonsToShow(updatePersons);
-					setSuccessMessage(`${newPerson.name} number edited`);
+			personService
+				.update(id, newPerson)
+				.then(() => {
+					personService.getAll().then((updatePersons) => {
+						setPersons(updatePersons);
+						setPersonsToShow(updatePersons);
+						setSuccessMessage(`${newPerson.name} number edited`);
+
+						setTimeout(() => {
+							setSuccessMessage(null);
+						}, 3000);
+					});
+				})
+				.catch((error) => {
+					setErrorMessage(
+						`${newName} has already been removed from server`
+					);
+					setTimeout(() => {
+						setErrorMessage(null);
+					}, 3000);
 
 					setTimeout(() => {
-						setSuccessMessage(null);
-					}, 2000);
+						personService.getAll().then((updatePersons) => {
+							setPersons(updatePersons);
+							setPersonsToShow(updatePersons);
+						});
+					}, 1000);
 				});
-			});
 			return;
 		}
 
@@ -128,7 +148,7 @@ const App = () => {
 
 			setTimeout(() => {
 				setSuccessMessage(null);
-			}, 2000);
+			}, 3000);
 		});
 	};
 
@@ -151,24 +171,43 @@ const App = () => {
 
 	const handleDeletePerson = (id, name) => {
 		if (window.confirm(`Delete ${name}?`)) {
-			personService.deleteMe(id).then(() => {
-				personService.getAll().then((updatePersons) => {
-					setPersons(updatePersons);
-					setPersonsToShow(updatePersons);
-					setSuccessMessage(`${name} deleted`);
+			personService
+				.deleteMe(id)
+				.then(() => {
+					personService.getAll().then((updatePersons) => {
+						setPersons(updatePersons);
+						setPersonsToShow(updatePersons);
+						setSuccessMessage(`${name} deleted`);
 
-			setTimeout(() => {
-				setSuccessMessage(null);
-			}, 2000);
+						setTimeout(() => {
+							setSuccessMessage(null);
+						}, 3000);
+					});
+				})
+				.catch((error) => {
+					setErrorMessage(`${name} was already removed from server`);
+					setTimeout(() => {
+						setErrorMessage(null);
+					}, 3000);
+
+					setTimeout(() => {
+						personService.getAll().then((updatePersons) => {
+							setPersons(updatePersons);
+							setPersonsToShow(updatePersons);
+						});
+					}, 1000);
+					// setPersonsToShow(personsToShow.filter(person => person.id !== id))
 				});
-			});
 		}
 	};
 
 	return (
 		<div>
 			<h2>Phonebook</h2>
-			<Notification message={successMessage} />
+			<Notification
+				successMessage={successMessage}
+				errorMessage={errorMessage}
+			/>
 			<Filter newFilter={newFilter} handleChangeFilter={handleChangeFilter} />
 			<h2>add a new</h2>
 			<PersonForm

@@ -1,11 +1,28 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const Country = ({ name }) => {
-	return <li>{name}</li>;
+const Country = ({ name, index, handleShowView, countries }) => {
+	return (
+		<li>
+			{name}{' '}
+			<button onClick={() => handleShowView(index)}>
+				{countries[index].show ? 'Hide' : 'Show'}
+			</button>
+			{countries[index].show ? (
+				<CountryView
+					name={countries[index].name.common}
+					capital={countries[index].capital}
+					area={countries[index].area}
+					languages={countries[index].languages}
+					flag={countries[index].flags.svg}
+					altFlag={countries[index].flags.alt}
+				/>
+			) : null}
+		</li>
+	);
 };
 
-const SingleCountry = ({ name, capital, area, languages, flag, altFlag }) => {
+const CountryView = ({ name, capital, area, languages, flag, altFlag }) => {
 	return (
 		<>
 			<h2>{name}</h2>
@@ -32,16 +49,29 @@ const App = () => {
 
 	useEffect(() => {
 		axios.get('https://restcountries.com/v3.1/all').then((response) => {
-			setCountries(response.data);
+			const countriesWithIndex = response.data.map((country, index) => ({
+				...country,
+				index: index,
+				show: false,
+			}));
+			setCountries(countriesWithIndex);
 		});
 	}, []);
 
 	const handleSearch = (e) => {
-		const filtered = countries.filter((country) =>
+		const filteredCountries = countries.filter((country) =>
 			country.name.common.toLowerCase().includes(e.target.value.toLowerCase())
 		);
+		setCountriesToShow(filteredCountries);
+	};
 
-		setCountriesToShow(filtered);
+	const handleShowView = (index) => {
+		const updatedCountries = [...countries];
+		updatedCountries[index] = {
+			...updatedCountries[index],
+			show: !updatedCountries[index].show,
+		};
+		setCountries(updatedCountries);
 	};
 
 	return (
@@ -53,7 +83,7 @@ const App = () => {
 			{countriesToShow.length > 10 ? (
 				'To many matches, specify another filter'
 			) : countriesToShow.length === 1 ? (
-				<SingleCountry
+				<CountryView
 					name={countriesToShow[0].name.common}
 					capital={countriesToShow[0].capital}
 					area={countriesToShow[0].area}
@@ -64,7 +94,13 @@ const App = () => {
 			) : (
 				<ul>
 					{countriesToShow.map((country) => (
-						<Country key={country.idd.suffixes[0]} name={country.name.common} />
+						<Country
+							key={country.name.common}
+							name={country.name.common}
+							index={country.index}
+							handleShowView={handleShowView}
+							countries={countries}
+						/>
 					))}
 				</ul>
 			)}

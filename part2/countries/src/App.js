@@ -23,6 +23,23 @@ const Country = ({ name, index, handleShowView, countries }) => {
 };
 
 const CountryView = ({ name, capital, area, languages, flag, altFlag }) => {
+	const [weather, setWeather] = useState(null);
+
+	useEffect(() => {
+		const apiKey = process.env.REACT_APP_API_KEY;
+		axios
+			.get(
+				`https://api.weatherapi.com/v1/current.json?key=${apiKey}=${capital}`
+			)
+			.then((response) => {
+				setWeather(response.data);
+			});
+	}, [capital]);
+
+	if (!weather) {
+		return null;
+	}
+
 	return (
 		<>
 			<h2>{name}</h2>
@@ -39,6 +56,15 @@ const CountryView = ({ name, capital, area, languages, flag, altFlag }) => {
 				src={flag}
 				alt={altFlag}
 			/>
+			<h2>Weather in {capital}</h2>
+			<p>temperature {weather.current.temp_c} Celsius</p>
+			<img
+				style={{ maxWidth: '200px', border: '2px solid black' }}
+				src={weather.current.condition.icon}
+				alt={weather.current.condition.text}
+			/>
+
+			<p>wind {weather.current.wind_kph} kph</p>
 		</>
 	);
 };

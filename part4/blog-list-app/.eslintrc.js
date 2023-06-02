@@ -12,5 +12,6 @@ module.exports = {
   rules: {
     'prefer-destructuring': 0,
     'no-console': 0,
+    'no-underscore-dangle': 0
   },
 }

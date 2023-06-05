@@ -1,26 +1,7 @@
-/* eslint-disable no-param-reassign */
 const mongoose = require('mongoose')
-const config = require('../utils/config')
-const logger = require('../utils/logger')
-
-mongoose.set('strictQuery', false)
-
-mongoose
-	.connect(config.MONGODB_URI)
-	.then(() => {
-		logger.info('connected to MongoDB')
-	})
-	.catch((error) => {
-		logger.error('error connecting to MongoDB:', error.message)
-	})
-
-logger.info('connecting to', config.MONGODB_URI)
 
 const blogSchema = new mongoose.Schema({
-	title: {
-		type: String,
-		minLength: 5,
-	},
+	title: String,
 	author: String,
 	url: String,
 	likes: Number,

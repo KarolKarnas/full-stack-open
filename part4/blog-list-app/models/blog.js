@@ -5,12 +5,22 @@ const logger = require('../utils/logger')
 
 mongoose.set('strictQuery', false)
 
-mongoose.connect(config.MONGODB_URI)
+mongoose
+	.connect(config.MONGODB_URI)
+	.then(() => {
+		logger.info('connected to MongoDB')
+	})
+	.catch((error) => {
+		logger.error('error connecting to MongoDB:', error.message)
+	})
 
 logger.info('connecting to', config.MONGODB_URI)
 
 const blogSchema = new mongoose.Schema({
-	title: String,
+	title: {
+		type: String,
+		minLength: 5,
+	},
 	author: String,
 	url: String,
 	likes: Number,

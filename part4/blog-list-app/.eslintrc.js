@@ -3,6 +3,7 @@ module.exports = {
 		node: true,
 		commonjs: true,
 		es2021: true,
+		jest: true,
 	},
 	extends: ['eslint:recommended', 'prettier'],
 	parserOptions: {
@@ -28,4 +29,4 @@ module.exports = {
 		'arrow-spacing': ['error', { before: true, after: true }],
 		'no-console': 0,
 	},
-};
+}

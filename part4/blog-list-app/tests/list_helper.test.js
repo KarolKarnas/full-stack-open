@@ -70,7 +70,6 @@ test('dummy returns one', () => {
 })
 
 describe('total likes', () => {
-
 	test('is empty list return 0', () => {
 		const result = listHelper.totalLikes([])
 		expect(result).toBe(0)
@@ -88,7 +87,6 @@ describe('total likes', () => {
 })
 
 describe('most liked', () => {
-
 	test('return string "there is no favorite blog here" when array.length === 0', () => {
 		const result = listHelper.favoriteBlog([])
 
@@ -109,23 +107,62 @@ describe('most liked', () => {
 		const result = listHelper.favoriteBlog(blogsList)
 
 		expect(result).toEqual({
-				title: 'Canonical string reduction',
-				author: 'Edsger W. Dijkstra',
-				likes: 12,
-			})
+			title: 'Canonical string reduction',
+			author: 'Edsger W. Dijkstra',
+			likes: 12,
+		})
 	})
 })
 
-
 describe('most blogs', () => {
+	test('return string "there is no mostBlog here" when array.length === 0', () => {
+		const result = listHelper.mostBlogs([])
+
+		expect(result).toBe('there is no mostBlog here')
+	})
 
 	test('return obj with author name and number of blogs of the author with most blogs', () => {
 		const result = listHelper.mostBlogs(blogsList)
 
 		expect(result).toEqual({
-			author: "Robert C. Martin",
-			blogs: 3
+			author: 'Robert C. Martin',
+			blogs: 3,
 		})
 	})
 
+	test('return obj with author name and number of blogs of the author with most blogs with single author', () => {
+		const result = listHelper.mostBlogs(listWithOneBlog)
+
+		expect(result).toEqual({
+			author: 'Edsger W. Dijkstra',
+			blogs: 1,
+		})
+	})
+})
+
+describe('most likes', () => {
+
+	test('return string "there is no mostLikes here" when array.length === 0', () => {
+		const result = listHelper.mostLikes([])
+
+		expect(result).toBe('there is no mostLikes here')
+	})
+
+	test('return obj with author name and number of blogs of the author with most total likes', () => {
+		const result = listHelper.mostLikes(blogsList)
+
+		expect(result).toEqual({
+			author: 'Edsger W. Dijkstra',
+			likes: 17,
+		})
+	})
+
+	test('return obj with author name and number of blogs of the author with most total likes, with single author', () => {
+		const result = listHelper.mostLikes(listWithOneBlog)
+
+		expect(result).toEqual({
+			author: 'Edsger W. Dijkstra',
+			likes: 5,
+		})
+	})
 })

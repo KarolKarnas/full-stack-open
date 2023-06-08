@@ -99,9 +99,23 @@ test('after delete given id the object do not exist in db', async () => {
 
 	expect(blogsAtEnd.length).toBe(blogsAtStart.length - 1)
 
-	const titles = blogsAtEnd.map((note) => note.title)
+	const titles = blogsAtEnd.map((blog) => blog.title)
 
 	expect(titles).not.toContain(blogToDelete.title)
+})
+
+test('success update with code 200 and new number of likes', async () => {
+	const blogsAtStart = await helper.blogsInDb()
+	const blogToUpdate = blogsAtStart[0]
+
+	await api.put(`/api/blogs/${blogToUpdate.id}`).expect(200)
+
+	const blogsAtEnd = await helper.blogsInDb()
+
+	expect(blogsAtEnd.length).toBe(blogsAtStart.length)
+	const likesArr = blogsAtEnd.map((blog) => blog.likes)
+
+	expect(likesArr).toContain(blogToUpdate.likes)
 })
 
 afterAll(async () => {

@@ -7,7 +7,7 @@ const Blog = require('../models/blog')
 
 beforeEach(async () => {
 	await Blog.deleteMany({})
-  await Blog.insertMany(helper.initialBlogs)
+	await Blog.insertMany(helper.initialBlogs)
 })
 
 test('blogs are returned as json', async () => {
@@ -31,33 +31,42 @@ test('a specific blog is within returned blogs', async () => {
 	expect(titles).toContain('Go To Statement Considered Harmful')
 })
 
-
 test('unique identifier property of the blog posts is named id for each blog', async () => {
 	const response = await api.get('/api/blogs')
 	response.body.forEach((blog) => expect(blog.id).toBeDefined())
 })
 
 test('a valid blog can be added', async () => {
-  const newBlog = 	{
+	const newBlog = {
 		title: 'Canonical string reduction',
 		author: 'Edsger W. Dijkstra',
 		url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
 		likes: 12,
 	}
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+	await api
+		.post('/api/blogs')
+		.send(newBlog)
+		.expect(201)
+		.expect('Content-Type', /application\/json/)
 
-  const blogsAtEnd = await helper.blogsInDb()
-  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+	const blogsAtEnd = await helper.blogsInDb()
+	expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
 
-  const titles = blogsAtEnd.map(blog => blog.title)
-  expect(titles).toContain(
-    'Canonical string reduction'
-  )
+	const titles = blogsAtEnd.map((blog) => blog.title)
+	expect(titles).toContain('Canonical string reduction')
+})
+
+test('if the likes property is missing from the request, it will default to the value 0', async () => {
+	const newBlog = {
+		title: 'Canonical string reduction',
+		author: 'Edsger W. Dijkstra',
+		url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+	}
+
+	const response = await api.post('/api/blogs').send(newBlog)
+
+	expect(response.body.likes).toBe(0)
 })
 
 afterAll(async () => {

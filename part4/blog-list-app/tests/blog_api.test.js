@@ -89,6 +89,21 @@ test('if the url property is missing from the request data, the backend responds
 	await api.post('/api/blogs').send(newBlogNoUrl).expect(400)
 })
 
+test('after delete given id the object do not exist in db', async () => {
+	const blogsAtStart = await helper.blogsInDb()
+	const blogToDelete = blogsAtStart[0]
+
+	await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+
+	const blogsAtEnd = await helper.blogsInDb()
+
+	expect(blogsAtEnd.length).toBe(blogsAtStart.length - 1)
+
+	const titles = blogsAtEnd.map((note) => note.title)
+
+	expect(titles).not.toContain(blogToDelete.title)
+})
+
 afterAll(async () => {
 	await mongoose.connection.close()
 })

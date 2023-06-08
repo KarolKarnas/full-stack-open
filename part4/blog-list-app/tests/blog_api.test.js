@@ -33,6 +33,7 @@ test('a specific blog is within returned blogs', async () => {
 
 test('unique identifier property of the blog posts is named id for each blog', async () => {
 	const response = await api.get('/api/blogs')
+	// response.body.forEach((blog) => expect(blog).toHaveProperty('id'))
 	response.body.forEach((blog) => expect(blog.id).toBeDefined())
 })
 
@@ -67,6 +68,25 @@ test('if the likes property is missing from the request, it will default to the 
 	const response = await api.post('/api/blogs').send(newBlog)
 
 	expect(response.body.likes).toBe(0)
+})
+
+test('if the title property is missing from the request data, the backend responds to the request with the status code 400 Bad Request', async () => {
+	const newBlogNoTitle = {
+		author: 'Edsger W. Dijkstra',
+		url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+		likes: 12,
+	}
+
+	await api.post('/api/blogs').send(newBlogNoTitle).expect(400)
+})
+
+test('if the url property is missing from the request data, the backend responds to the request with the status code 400 Bad Request', async () => {
+	const newBlogNoUrl = {
+		title: 'Canonical string reduction',
+		author: 'Edsger W. Dijkstra',
+		likes: 12,
+	}
+	await api.post('/api/blogs').send(newBlogNoUrl).expect(400)
 })
 
 afterAll(async () => {

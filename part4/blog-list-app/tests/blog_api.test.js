@@ -3,14 +3,16 @@ const supertest = require('supertest')
 const helper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
+const bcrypt = require('bcrypt')
 const Blog = require('../models/blog')
-
-beforeEach(async () => {
-	await Blog.deleteMany({})
-	await Blog.insertMany(helper.initialBlogs)
-})
+const User = require('../models/user')
 
 describe('when there is initially some blogs saved', () => {
+	beforeEach(async () => {
+		await Blog.deleteMany({})
+		await Blog.insertMany(helper.initialBlogs)
+	})
+
 	test('blogs are returned as json', async () => {
 		await api
 			.get('/api/blogs')
@@ -37,94 +39,152 @@ describe('when there is initially some blogs saved', () => {
 		// response.body.forEach((blog) => expect(blog).toHaveProperty('id'))
 		response.body.forEach((blog) => expect(blog.id).toBeDefined())
 	})
+
+	describe('addition of a new blog', () => {
+		test('a valid blog can be added', async () => {
+			const newBlog = {
+				title: 'Canonical string reduction',
+				author: 'Edsger W. Dijkstra',
+				url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+				likes: 12,
+			}
+
+			await api
+				.post('/api/blogs')
+				.send(newBlog)
+				.expect(201)
+				.expect('Content-Type', /application\/json/)
+
+			const blogsAtEnd = await helper.blogsInDb()
+			expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+
+			const titles = blogsAtEnd.map((blog) => blog.title)
+			expect(titles).toContain('Canonical string reduction')
+		})
+
+		test('if the likes property is missing from the request, it will default to the value 0', async () => {
+			const newBlog = {
+				title: 'Canonical string reduction',
+				author: 'Edsger W. Dijkstra',
+				url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+			}
+
+			const response = await api.post('/api/blogs').send(newBlog)
+
+			expect(response.body.likes).toBe(0)
+		})
+
+		test('if the title property is missing, backend responds 400 Bad Request', async () => {
+			const newBlogNoTitle = {
+				author: 'Edsger W. Dijkstra',
+				url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+				likes: 12,
+			}
+
+			await api.post('/api/blogs').send(newBlogNoTitle).expect(400)
+		})
+
+		test('if the url property is missing, backend responds 400 Bad Request', async () => {
+			const newBlogNoUrl = {
+				title: 'Canonical string reduction',
+				author: 'Edsger W. Dijkstra',
+				likes: 12,
+			}
+			await api.post('/api/blogs').send(newBlogNoUrl).expect(400)
+		})
+	})
+
+	describe('Blog delete', () => {
+		test('after delete given id the object do not exist in db', async () => {
+			const blogsAtStart = await helper.blogsInDb()
+			const blogToDelete = blogsAtStart[0]
+
+			await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+
+			const blogsAtEnd = await helper.blogsInDb()
+
+			expect(blogsAtEnd.length).toBe(blogsAtStart.length - 1)
+
+			const titles = blogsAtEnd.map((blog) => blog.title)
+
+			expect(titles).not.toContain(blogToDelete.title)
+		})
+	})
+
+	describe('Blog update', () => {
+		test('success update with code 200 and new number of likes', async () => {
+			const blogsAtStart = await helper.blogsInDb()
+			const blogToUpdate = blogsAtStart[0]
+
+			await api.put(`/api/blogs/${blogToUpdate.id}`).expect(200)
+
+			const blogsAtEnd = await helper.blogsInDb()
+
+			expect(blogsAtEnd.length).toBe(blogsAtStart.length)
+			const likesArr = blogsAtEnd.map((blog) => blog.likes)
+
+			expect(likesArr).toContain(blogToUpdate.likes)
+		})
+	})
 })
 
-describe('addition of a new blog', () => {
-	test('a valid blog can be added', async () => {
-		const newBlog = {
-			title: 'Canonical string reduction',
-			author: 'Edsger W. Dijkstra',
-			url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-			likes: 12,
-		}
 
-		await api
-			.post('/api/blogs')
-			.send(newBlog)
-			.expect(201)
-			.expect('Content-Type', /application\/json/)
+describe.only('when there is initially one user in db', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
 
-		const blogsAtEnd = await helper.blogsInDb()
-		expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'root', passwordHash })
 
-		const titles = blogsAtEnd.map((blog) => blog.title)
-		expect(titles).toContain('Canonical string reduction')
-	})
+    await user.save()
+  })
 
-	test('if the likes property is missing from the request, it will default to the value 0', async () => {
-		const newBlog = {
-			title: 'Canonical string reduction',
-			author: 'Edsger W. Dijkstra',
-			url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-		}
+  test('creation succeeds with a fresh username', async () => {
+    const usersAtStart = await helper.usersInDb()
 
-		const response = await api.post('/api/blogs').send(newBlog)
+    const newUser = {
+      username: 'mluukkai',
+      name: 'Matti Luukkainen',
+      password: 'salainen',
+    }
 
-		expect(response.body.likes).toBe(0)
-	})
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
 
-	test('if the title property is missing, backend responds 400 Bad Request', async () => {
-		const newBlogNoTitle = {
-			author: 'Edsger W. Dijkstra',
-			url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-			likes: 12,
-		}
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
 
-		await api.post('/api/blogs').send(newBlogNoTitle).expect(400)
-	})
+    const usernames = usersAtEnd.map(u => u.username)
+    expect(usernames).toContain(newUser.username)
+  })
 
-	test('if the url property is missing, backend responds 400 Bad Request', async () => {
-		const newBlogNoUrl = {
-			title: 'Canonical string reduction',
-			author: 'Edsger W. Dijkstra',
-			likes: 12,
-		}
-		await api.post('/api/blogs').send(newBlogNoUrl).expect(400)
-	})
+	test('creation fails with proper statuscode and message if username already taken', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'root',
+      name: 'Superuser',
+      password: 'salainen',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('expected `username` to be unique')
+
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd).toEqual(usersAtStart)
+  })
+
 })
 
-describe('Blog delete', () => {
-	test('after delete given id the object do not exist in db', async () => {
-		const blogsAtStart = await helper.blogsInDb()
-		const blogToDelete = blogsAtStart[0]
 
-		await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
-
-		const blogsAtEnd = await helper.blogsInDb()
-
-		expect(blogsAtEnd.length).toBe(blogsAtStart.length - 1)
-
-		const titles = blogsAtEnd.map((blog) => blog.title)
-
-		expect(titles).not.toContain(blogToDelete.title)
-	})
-})
-
-describe('Blog update', () => {
-	test('success update with code 200 and new number of likes', async () => {
-		const blogsAtStart = await helper.blogsInDb()
-		const blogToUpdate = blogsAtStart[0]
-
-		await api.put(`/api/blogs/${blogToUpdate.id}`).expect(200)
-
-		const blogsAtEnd = await helper.blogsInDb()
-
-		expect(blogsAtEnd.length).toBe(blogsAtStart.length)
-		const likesArr = blogsAtEnd.map((blog) => blog.likes)
-
-		expect(likesArr).toContain(blogToUpdate.likes)
-	})
-})
 
 afterAll(async () => {
 	await mongoose.connection.close()

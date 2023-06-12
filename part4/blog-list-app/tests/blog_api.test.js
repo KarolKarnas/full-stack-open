@@ -79,7 +79,7 @@ describe('when there is initially some blogs saved', () => {
 			await api.post('/api/blogs').send(newBlog).expect(401)
 		})
 
-		test('a valid blog can be added', async () => {
+		test('a valid blog can be added with token provided', async () => {
 			const newBlog = {
 				title: 'Canonical string reduction',
 				author: 'Edsger W. Dijkstra',
@@ -116,7 +116,7 @@ describe('when there is initially some blogs saved', () => {
 			expect(response.body.likes).toBe(0)
 		})
 
-		test('if the title property is missing, backend responds 400 Bad Request', async () => {
+		test('if the title property is missing and token is provided, backend responds 400 Bad Request', async () => {
 			const newBlogNoTitle = {
 				author: 'Edsger W. Dijkstra',
 				url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
@@ -126,7 +126,7 @@ describe('when there is initially some blogs saved', () => {
 			await api.post('/api/blogs').set('Authorization', `Bearer ${token}`).send(newBlogNoTitle).expect(400)
 		})
 
-		test('if the url property is missing, backend responds 400 Bad Request', async () => {
+		test('if the url property is missing and token is provided, backend responds 400 Bad Request', async () => {
 			const newBlogNoUrl = {
 				title: 'Canonical string reduction',
 				author: 'Edsger W. Dijkstra',
@@ -137,7 +137,7 @@ describe('when there is initially some blogs saved', () => {
 	})
 
 	describe('Blog delete', () => {
-		test('after delete given id the object do not exist in db', async () => {
+		test('when token provided, after delete given id the object do not exist in db', async () => {
 			const blogsAtStart = await helper.blogsInDb()
 			const blogToDelete = blogsAtStart[0]
 

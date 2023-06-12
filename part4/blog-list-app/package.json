@@ -9,7 +9,8 @@
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
 		"test": "NODE_ENV=test jest --verbose --runInBand",
-		"test:api": "NODE_ENV=test jest --verbose --runInBand tests/blog_api.test.js"
+		"test:blog": "NODE_ENV=test jest --verbose --runInBand tests/blog_api.test.js",
+		"test:user": "NODE_ENV=test jest --verbose --runInBand tests/user_api.test.js"
 	},
 	"author": "",
 	"license": "MIT",

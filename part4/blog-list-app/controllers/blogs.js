@@ -1,4 +1,5 @@
 const blogsRouter = require('express').Router()
+const middleware = require('../utils/middleware')
 const Blog = require('../models/blog')
 
 blogsRouter.get('/', async (request, response) => {
@@ -6,7 +7,8 @@ blogsRouter.get('/', async (request, response) => {
 	response.json(blogs)
 })
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
+
 	const { title, author, url, likes } = request.body
 
 	const user = request.user
@@ -27,16 +29,20 @@ blogsRouter.post('/', async (request, response) => {
 	response.status(201).json(savedBlog)
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
-	const user = request.user
-	const blog = await Blog.findById(request.params.id)
-	const userId = blog.user.toString()
-	if (user.id !== userId) {
-		return response.status(401).json({ error: 'invalid user' })
+blogsRouter.delete(
+	'/:id',
+	middleware.userExtractor,
+	async (request, response) => {
+		const user = request.user
+		const blog = await Blog.findById(request.params.id)
+		const userId = blog.user.toString()
+		if (user.id !== userId) {
+			return response.status(401).json({ error: 'invalid user' })
+		}
+		await Blog.findByIdAndDelete(request.params.id)
+		response.status(204).end()
 	}
-	await Blog.findByIdAndDelete(request.params.id)
-	response.status(204).end()
-})
+)
 
 blogsRouter.put('/:id', async (request, response) => {
 	const { title, author, url, likes } = request.body

@@ -7,12 +7,39 @@ const bcrypt = require('bcrypt')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
-describe('when there is initially some blogs saved', () => {
-	beforeEach(async () => {
-		await Blog.deleteMany({})
-		await Blog.insertMany(helper.initialBlogs)
+let token = ''
+let userId = ''
+
+beforeAll(async () => {
+	await User.deleteMany({})
+
+	const passwordHash = await bcrypt.hash('tester', 10)
+
+	const initialUser = new User({
+		username: 'tester',
+		name: 'tester',
+		passwordHash,
 	})
 
+	const user = await initialUser.save()
+	userId = user.id
+	const response = await api.post('/api/login').send({
+		username: 'tester',
+		password: 'tester',
+	})
+	token = response.body.token
+})
+
+beforeEach(async () => {
+	await Blog.deleteMany({})
+	const initialBlogsUser = helper.initialBlogs.map((blog) => ({
+		...blog,
+		user: userId,
+	}))
+	await Blog.insertMany(initialBlogsUser)
+})
+
+describe('when there is initially some blogs saved', () => {
 	test('blogs are returned as json', async () => {
 		await api
 			.get('/api/blogs')
@@ -41,6 +68,17 @@ describe('when there is initially some blogs saved', () => {
 	})
 
 	describe('addition of a new blog', () => {
+		test('adding a blog fails with 401 Unauthorized if a token is not provided', async () => {
+			const newBlog = {
+				title: 'Canonical string reduction',
+				author: 'Edsger W. Dijkstra',
+				url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+				likes: 12,
+			}
+
+			await api.post('/api/blogs').send(newBlog).expect(401)
+		})
+
 		test('a valid blog can be added', async () => {
 			const newBlog = {
 				title: 'Canonical string reduction',
@@ -51,6 +89,7 @@ describe('when there is initially some blogs saved', () => {
 
 			await api
 				.post('/api/blogs')
+				.set('Authorization', `Bearer ${token}`)
 				.send(newBlog)
 				.expect(201)
 				.expect('Content-Type', /application\/json/)
@@ -69,7 +108,10 @@ describe('when there is initially some blogs saved', () => {
 				url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
 			}
 
-			const response = await api.post('/api/blogs').send(newBlog)
+			const response = await api
+				.post('/api/blogs')
+				.set('Authorization', `Bearer ${token}`)
+				.send(newBlog)
 
 			expect(response.body.likes).toBe(0)
 		})
@@ -81,7 +123,7 @@ describe('when there is initially some blogs saved', () => {
 				likes: 12,
 			}
 
-			await api.post('/api/blogs').send(newBlogNoTitle).expect(400)
+			await api.post('/api/blogs').set('Authorization', `Bearer ${token}`).send(newBlogNoTitle).expect(400)
 		})
 
 		test('if the url property is missing, backend responds 400 Bad Request', async () => {
@@ -90,7 +132,7 @@ describe('when there is initially some blogs saved', () => {
 				author: 'Edsger W. Dijkstra',
 				likes: 12,
 			}
-			await api.post('/api/blogs').send(newBlogNoUrl).expect(400)
+			await api.post('/api/blogs').set('Authorization', `Bearer ${token}`).send(newBlogNoUrl).expect(400)
 		})
 	})
 
@@ -99,7 +141,10 @@ describe('when there is initially some blogs saved', () => {
 			const blogsAtStart = await helper.blogsInDb()
 			const blogToDelete = blogsAtStart[0]
 
-			await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+			await api
+				.delete(`/api/blogs/${blogToDelete.id}`)
+				.set('Authorization', `Bearer ${token}`)
+				.expect(204)
 
 			const blogsAtEnd = await helper.blogsInDb()
 
@@ -125,97 +170,6 @@ describe('when there is initially some blogs saved', () => {
 
 			expect(likesArr).toContain(blogToUpdate.likes)
 		})
-	})
-})
-
-describe('when there is initially one user in db', () => {
-	beforeEach(async () => {
-		await User.deleteMany({})
-
-		const passwordHash = await bcrypt.hash('sekret', 10)
-		const user = new User({ username: 'root', passwordHash })
-
-		await user.save()
-	})
-
-	test('creation succeeds with a fresh username', async () => {
-		const usersAtStart = await helper.usersInDb()
-
-		const newUser = {
-			username: 'mluukkai',
-			name: 'Matti Luukkainen',
-			password: 'salainen',
-		}
-
-		await api
-			.post('/api/users')
-			.send(newUser)
-			.expect(201)
-			.expect('Content-Type', /application\/json/)
-
-		const usersAtEnd = await helper.usersInDb()
-		expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
-
-		const usernames = usersAtEnd.map((u) => u.username)
-		expect(usernames).toContain(newUser.username)
-	})
-
-	test('creation fails with proper statuscode and message if username already taken', async () => {
-		const usersAtStart = await helper.usersInDb()
-
-		const newUser = {
-			username: 'root',
-			name: 'Superuser',
-			password: 'salainen',
-		}
-
-		const result = await api
-			.post('/api/users')
-			.send(newUser)
-			.expect(400)
-			.expect('Content-Type', /application\/json/)
-
-		expect(result.body.error).toContain('expected `username` to be unique')
-
-		const usersAtEnd = await helper.usersInDb()
-		expect(usersAtEnd).toEqual(usersAtStart)
-	})
-
-	test('if the username property is missing, backend responds 400 Bad Request', async () => {
-		const newUserNoTitle = {
-			name: 'admin admin',
-			password: 'admin',
-		}
-
-		await api.post('/api/users').send(newUserNoTitle).expect(400)
-	})
-
-	test('if the password property is missing, backend responds 400 Bad Request', async () => {
-		const newUserNoPass = {
-			username: 'admin',
-			name: 'admin admin',
-		}
-		await api.post('/api/users').send(newUserNoPass).expect(400)
-	})
-
-	test('is username minimum 3 characters long', async () => {
-		const toShortUsername = {
-			username: 'ad',
-			name: 'admin admin',
-			password: 'admin',
-		}
-
-		await api.post('/api/users').send(toShortUsername).expect(400)
-	})
-
-	test('is password minimum 3 characters long', async () => {
-		const toShortPassword = {
-			username: 'admin',
-			name: 'admin admin',
-			password: 'ad',
-		}
-
-		await api.post('/api/users').send(toShortPassword).expect(400)
 	})
 })
 

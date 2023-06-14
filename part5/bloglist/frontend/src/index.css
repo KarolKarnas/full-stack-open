@@ -15,15 +15,27 @@ h1 {
 }
 
 .error {
-    color: red;
-    background: lightgrey;
-    font-size: 20px;
-    border-style: solid;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
+	color: red;
+	background: lightgrey;
+	font-size: 20px;
+	border-style: solid;
+	border-radius: 5px;
+	border-color: red;
+	padding: 10px;
+	margin-bottom: 10px;
+}
 
-  .footer {
-    color: turquoise;
-  }
+.success {
+	color: green;
+	background: lightgrey;
+	font-size: 20px;
+	border-style: solid;
+	border-radius: 5px;
+	border-color: green;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+.footer {
+	color: turquoise;
+}

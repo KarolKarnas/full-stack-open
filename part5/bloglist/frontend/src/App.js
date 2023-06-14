@@ -7,7 +7,9 @@ import loginService from './services/login'
 
 const App = () => {
 	const [blogs, setBlogs] = useState([])
-	const [newBlog, setNewBlog] = useState('')
+	const [newTitle, setNewTitle] = useState('')
+	const [newUrl, setNewUrl] = useState('')
+	const [newAuthor, setNewAuthor] = useState('')
 	const [errorMessage, setErrorMessage] = useState(null)
 
 	const [username, setUsername] = useState('')
@@ -18,6 +20,15 @@ const App = () => {
 		blogService.getAll().then((blogs) => setBlogs(blogs))
 	}, [])
 
+	useEffect(() => {
+    const loggedUserJSON = localStorage.getItem('loggedBlogAppUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      blogService.setToken(user.token)
+    }
+  }, [])
+
 	const handleLogin = async (event) => {
 		event.preventDefault()
 
@@ -26,9 +37,47 @@ const App = () => {
 				username,
 				password,
 			})
+			localStorage.setItem(
+        'loggedBlogAppUser', JSON.stringify(user)
+      ) 
+			blogService.setToken(user.token)
 			setUser(user)
 			setUsername('')
 			setPassword('')
+		} catch (error) {
+			const message = error.response.data.error
+			setErrorMessage(message)
+			setTimeout(() => {
+				setErrorMessage(null)
+			}, 5000)
+		}
+	}
+
+	const handleLogout = (e) => {
+		e.preventDefault()
+		blogService.setToken(null)
+		localStorage.removeItem(
+			'loggedBlogAppUser', JSON.stringify(user)
+		)
+		setUser(null)
+	}
+
+	const addBlog = async (e) => {
+		e.preventDefault()
+		try {
+			const blogObject = {
+				title: newTitle,
+				author: newAuthor,
+				url: newUrl,
+			}
+
+			const response = await blogService.create(blogObject)
+			// const blog = response.data
+			// console.log(blog)
+			setBlogs(blogs.concat(response.data))
+			setNewTitle('')
+			setNewAuthor('')
+			setNewUrl('')
 		} catch (error) {
 			const message = error.response.data.error
 			setErrorMessage(message)
@@ -62,25 +111,22 @@ const App = () => {
 		</form>
 	)
 
-	const addBlog = (e) => {
-		e.preventDefault()
-		const blogObject = {
-			content: newBlog,
-		}
-
-		blogService.create(blogObject).then((returnedBlog) => {
-			setBlogs(blogs.concat(returnedBlog))
-			setNewBlog('')
-		})
+	const handleNewTitleChange = (e) => {
+		setNewTitle(e.target.value)
+	}
+	const handleNewUrlChange = (e) => {
+		setNewUrl(e.target.value)
 	}
 
-	const handleBlogChange = (e) => {
-		setNewBlog(e.target.value)
+	const handleNewAuthorChange = (e) => {
+		setNewAuthor(e.target.value)
 	}
 
 	const blogForm = () => (
 		<form onSubmit={addBlog}>
-			<input value={newBlog} onChange={handleBlogChange} />
+			<input value={newTitle} placeholder='title' onChange={handleNewTitleChange} />
+			<input value={newAuthor} placeholder='author' onChange={handleNewAuthorChange} />
+			<input value={newUrl} placeholder='url' onChange={handleNewUrlChange} />
 			<button type='submit'>save</button>
 		</form>
 	)
@@ -95,7 +141,9 @@ const App = () => {
 				loginForm()
 			) : (
 				<>
-				<p>{user.name} logged in <button>Logout</button></p>
+					<p>
+						{user.name} logged in <button onClick={handleLogout}>Logout</button>
+					</p>
 					{blogForm()}
 					<h2>blogs</h2>
 					{blogs.map((blog) => (

@@ -8,7 +8,6 @@ blogsRouter.get('/', async (request, response) => {
 })
 
 blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
-
 	const { title, author, url, likes } = request.body
 
 	const user = request.user

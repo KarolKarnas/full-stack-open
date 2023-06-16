@@ -70,7 +70,37 @@ const App = () => {
 			const newBlog = response.data
 			const updatedBlogs = await blogService.getAll()
 			setBlogs(updatedBlogs)
-			setSuccessMessage(`a new blog ${newBlog.title}! By ${newBlog.author} added!`)
+			setSuccessMessage(
+				`a new blog ${newBlog.title}! By ${newBlog.author} added!`
+			)
+			setTimeout(() => {
+				setSuccessMessage(null)
+			}, 5000)
+		} catch (error) {
+			const message = error.response.data.error
+			setErrorMessage(message)
+			setTimeout(() => {
+				setErrorMessage(null)
+			}, 5000)
+		}
+	}
+
+	const addLike = async (blogObject) => {
+		const user = blogObject.blog.user.id
+		const { author, title, url } = blogObject.blog
+		let { likes } = blogObject.blog
+		likes++
+		const blogToUpdate = { user, likes, author, title, url }
+		const id = blogObject.blog.id
+
+		try {
+			const response = await blogService.update(blogToUpdate, id)
+			const updatedBlog = response.data
+			const updatedBlogs = await blogService.getAll()
+			setBlogs(updatedBlogs)
+			setSuccessMessage(
+				`LIKE ADDED TO ${updatedBlog.title}! By ${updatedBlog.author} ADDED!`
+			)
 			setTimeout(() => {
 				setSuccessMessage(null)
 			}, 5000)
@@ -106,7 +136,7 @@ const App = () => {
 			<button type='submit'>login</button>
 		</form>
 	)
-	
+
 	return (
 		<div>
 			<h1>Blog list</h1>
@@ -128,7 +158,7 @@ const App = () => {
 					</Togglable>
 					<h2>Blogs</h2>
 					{blogs.map((blog) => (
-						<Blog key={blog.id} blog={blog} />
+						<Blog key={blog.id} blog={blog} addLike={addLike} />
 					))}
 				</>
 			)}

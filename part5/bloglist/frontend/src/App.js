@@ -88,12 +88,11 @@ const App = () => {
 	}
 
 	const addLike = async (blogObject) => {
-		const user = blogObject.blog.user.id
-		const { author, title, url } = blogObject.blog
-		let { likes } = blogObject.blog
-		likes++
-		const blogToUpdate = { user, likes, author, title, url }
-		const id = blogObject.blog.id
+		const user = blogObject.user.id
+		const { author, title, url, likes } = blogObject
+		const updatedLikes = likes + 1
+		const blogToUpdate = { user, likes: updatedLikes, author, title, url }
+		const id = blogObject.id
 
 		try {
 			const response = await blogService.update(blogToUpdate, id)
@@ -113,6 +112,30 @@ const App = () => {
 				setErrorMessage(null)
 			}, 5000)
 		}
+	}
+
+	const deleteBlog = async (blogObject) => {
+
+	if(	window.confirm(`Do you really want to delete ${blogObject.title} by ${blogObject.author}?`)) {
+const {id} = blogObject
+try {
+	await blogService.remove(id)
+	const updatedBlogs = await blogService.getAll()
+	setBlogs(updatedBlogs)
+	setSuccessMessage(
+		`${blogObject.title} by ${blogObject.author} DELETED!`
+	)
+	setTimeout(() => {
+		setSuccessMessage(null)
+	}, 5000)
+} catch (error) {
+	const message = error.response.data.error
+	setErrorMessage(message)
+	setTimeout(() => {
+		setErrorMessage(null)
+	}, 5000)
+}
+	}
 	}
 
 	const loginForm = () => (
@@ -160,7 +183,7 @@ const App = () => {
 					</Togglable>
 					<h2>Blogs</h2>
 					{blogs.sort((a, b) => b.likes - a.likes).map((blog) => (
-						<Blog key={blog.id} blog={blog} addLike={addLike} />
+						<Blog key={blog.id} blog={blog} addLike={addLike} deleteBlog={deleteBlog}/>
 					))}
 				</>
 			)}

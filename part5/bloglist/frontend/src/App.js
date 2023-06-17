@@ -115,27 +115,30 @@ const App = () => {
 	}
 
 	const deleteBlog = async (blogObject) => {
-
-	if(	window.confirm(`Do you really want to delete ${blogObject.title} by ${blogObject.author}?`)) {
-const {id} = blogObject
-try {
-	await blogService.remove(id)
-	const updatedBlogs = await blogService.getAll()
-	setBlogs(updatedBlogs)
-	setSuccessMessage(
-		`${blogObject.title} by ${blogObject.author} DELETED!`
-	)
-	setTimeout(() => {
-		setSuccessMessage(null)
-	}, 5000)
-} catch (error) {
-	const message = error.response.data.error
-	setErrorMessage(message)
-	setTimeout(() => {
-		setErrorMessage(null)
-	}, 5000)
-}
-	}
+		if (
+			window.confirm(
+				`Do you really want to delete ${blogObject.title} by ${blogObject.author}?`
+			)
+		) {
+			const { id } = blogObject
+			try {
+				await blogService.remove(id)
+				const updatedBlogs = await blogService.getAll()
+				setBlogs(updatedBlogs)
+				setSuccessMessage(
+					`${blogObject.title} by ${blogObject.author} DELETED!`
+				)
+				setTimeout(() => {
+					setSuccessMessage(null)
+				}, 5000)
+			} catch (error) {
+				const message = error.response.data.error
+				setErrorMessage(message)
+				setTimeout(() => {
+					setErrorMessage(null)
+				}, 5000)
+			}
+		}
 	}
 
 	const loginForm = () => (
@@ -182,9 +185,16 @@ try {
 						<BlogForm createBlog={addBlog} />
 					</Togglable>
 					<h2>Blogs</h2>
-					{blogs.sort((a, b) => b.likes - a.likes).map((blog) => (
-						<Blog key={blog.id} blog={blog} addLike={addLike} deleteBlog={deleteBlog}/>
-					))}
+					{blogs
+						.sort((a, b) => b.likes - a.likes)
+						.map((blog) => (
+							<Blog
+								key={blog.id}
+								blog={blog}
+								addLike={addLike}
+								deleteBlog={deleteBlog}
+							/>
+						))}
 				</>
 			)}
 

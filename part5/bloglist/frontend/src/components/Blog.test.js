@@ -19,19 +19,16 @@ describe('<Blog />', () => {
 			id: '648c09e883d3ee38f0f23e35',
 		}
 
-		const { container } = render(<Blog blog={blog} />)
+const { container } =	render(<Blog blog={blog} />)
 
-		const defaultVisibleTitle = container.querySelector('.defaultVisibleTitle')
-		expect(defaultVisibleTitle.parentElement).not.toHaveStyle('display: none')
+const titleAndAuthor = screen.getByText(`${blog.title} by ${blog.author}`)
+expect(titleAndAuthor).toBeDefined()
 
-		const defaultVisibleAuthor = container.querySelector('.defaultVisibleAuthor')
-		expect(defaultVisibleAuthor.parentElement).not.toHaveStyle('display: none')
 
-		const url = container.querySelector('.url')
-		expect(url.parentElement).toHaveStyle('display: none')
-
-		const likes = container.querySelector('.likes')
-		expect(likes.parentElement).toHaveStyle('display: none')
+const url = container.querySelector('.url')
+expect(url).toBeNull()
+const likes = container.querySelector('.likes')
+expect(likes).toBeNull()
 
 	})
 })

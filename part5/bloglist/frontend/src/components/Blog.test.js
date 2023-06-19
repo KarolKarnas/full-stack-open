@@ -26,7 +26,6 @@ describe('<Blog />', () => {
 	})
 
 	test("By default component renders blog's author and title, and not renders url and likes", () => {
-		// const { container } = render(<Blog blog={blog} />)
 
 		const titleAndAuthor = screen.getByText(`${blog.title} by ${blog.author}`)
 		expect(titleAndAuthor).toBeDefined()

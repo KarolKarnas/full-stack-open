@@ -31,12 +31,38 @@ describe('Blog app', function () {
 			cy.get('#password').type('wrong')
 			cy.get('#login-button').click()
 
-      cy.get('.error')
-			.should('contain', 'invalid username or password')
-			.and('have.css', 'color', 'rgb(255, 0, 0)')
-			.and('have.css', 'border-style', 'solid')
+			cy.get('.error')
+				.should('contain', 'invalid username or password')
+				.and('have.css', 'color', 'rgb(255, 0, 0)')
+				.and('have.css', 'border-style', 'solid')
 
-      cy.get('html').should('not.contain', 'Admin Karnas logged in')
+			cy.get('html').should('not.contain', 'Admin Karnas logged in')
+		})
+	})
+
+	describe('When logged in', function () {
+		beforeEach(function () {
+			cy.contains('log in').click()
+			cy.get('#username').type('admin')
+			cy.get('#password').type('admin')
+			cy.get('#login-button').click()
+		})
+
+		it('A blog can be created', function () {
+			cy.get('#toggle-blog-form').click()
+      cy.get('#title').type('Nobody expects the Spanish Inquisition')
+      cy.get('#author').type('Monty Python')
+      cy.get('#url').type('https://www.montypython.com')
+      cy.get('#blogSaveBtn').click()
+
+
+      cy.get('.success')
+				.should('contain', 'a new blog Nobody expects the Spanish Inquisition! By Monty Python added!')
+				.and('have.css', 'color', 'rgb(0, 128, 0)')
+				.and('have.css', 'border-style', 'solid')
+
+        cy.get('html').should('contain', 'Nobody expects the Spanish Inquisition by Monty Python')
+
 		})
 	})
 })

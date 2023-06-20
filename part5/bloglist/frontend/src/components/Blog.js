@@ -19,7 +19,7 @@ const Blog = ({ blog, addLike, deleteBlog }) => {
 		<div style={blogStyle}>
 			<p>
 				{blog.title} by {blog.author}{' '}
-				<button onClick={toggleBlogVisibility}>
+				<button id={blogVisible ? 'hide' : 'view'} onClick={toggleBlogVisibility}>
 					{blogVisible ? 'hide' : 'view'}
 				</button>
 			</p>
@@ -28,7 +28,7 @@ const Blog = ({ blog, addLike, deleteBlog }) => {
 					<p className='url'>{blog.url}</p>
 					<p className='likes'>
 						likes {blog.likes}{' '}
-						<button onClick={() => addLike(blog)}>like</button>
+						<button id='likeBtn' onClick={() => addLike(blog)}>like</button>
 					</p>
 					<p>{blog.user.username}</p>
 					<button onClick={() => deleteBlog(blog)}>Delete</button>

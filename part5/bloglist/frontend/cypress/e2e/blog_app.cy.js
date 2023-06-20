@@ -17,16 +17,17 @@ describe('Blog app', function () {
 
 	describe('Login', function () {
 		it('succeeds with correct credentials', function () {
-			cy.contains('log in').click()
+			// cy.contains('log in').click()
 			cy.get('#username').type('admin')
 			cy.get('#password').type('admin')
 			cy.get('#login-button').click()
 
-			cy.contains('Admin Karnas logged in')
+			// cy.contains('Admin Karnas logged in')
+      cy.get('html').should('contain', 'Admin Karnas logged in')
 		})
 
 		it('fails with wrong credentials, notification shown with unsuccessful login is displayed red', function () {
-			cy.contains('log in').click()
+			// cy.contains('log in').click()
 			cy.get('#username').type('admin')
 			cy.get('#password').type('wrong')
 			cy.get('#login-button').click()
@@ -42,7 +43,7 @@ describe('Blog app', function () {
 
 	describe('When logged in', function () {
 		beforeEach(function () {
-			cy.contains('log in').click()
+			// cy.contains('log in').click()
 			cy.get('#username').type('admin')
 			cy.get('#password').type('admin')
 			cy.get('#login-button').click()
@@ -50,19 +51,39 @@ describe('Blog app', function () {
 
 		it('A blog can be created', function () {
 			cy.get('#toggle-blog-form').click()
-      cy.get('#title').type('Nobody expects the Spanish Inquisition')
-      cy.get('#author').type('Monty Python')
-      cy.get('#url').type('https://www.montypython.com')
-      cy.get('#blogSaveBtn').click()
+			cy.get('#title').type('Nobody expects the Spanish Inquisition')
+			cy.get('#author').type('Monty Python')
+			cy.get('#url').type('https://www.montypython.com')
+			cy.get('#blogSaveBtn').click()
 
-
-      cy.get('.success')
-				.should('contain', 'a new blog Nobody expects the Spanish Inquisition! By Monty Python added!')
+			cy.get('.success')
+				.should(
+					'contain',
+					'a new blog Nobody expects the Spanish Inquisition! By Monty Python added!'
+				)
 				.and('have.css', 'color', 'rgb(0, 128, 0)')
 				.and('have.css', 'border-style', 'solid')
 
-        cy.get('html').should('contain', 'Nobody expects the Spanish Inquisition by Monty Python')
+			cy.get('html').should(
+				'contain',
+				'Nobody expects the Spanish Inquisition by Monty Python'
+			)
+		})
 
+		it('users can like a blog', function () {
+			cy.get('#toggle-blog-form').click()
+			cy.get('#title').type('Nobody expects the Spanish Inquisition')
+			cy.get('#author').type('Monty Python')
+			cy.get('#url').type('https://www.montypython.com')
+			cy.get('#blogSaveBtn')
+				.click()
+				.get('#view')
+				.click()
+				.get('#likeBtn')
+				.click()
+
+    cy.get('html').should('contain', 'likes 1')
+    cy.get('html').should('not.contain', 'likes 0')
 		})
 	})
 })

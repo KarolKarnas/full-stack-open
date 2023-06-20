@@ -100,5 +100,24 @@ describe('Blog app', function () {
 				.get('#deleteBtn')
 				.click()
 		})
+
+		it.only('only the creator can see the delete button of a blog, not anyone else', function () {
+			//will not work with more than 1 blogs
+
+			cy.get('#toggle-blog-form').click()
+			cy.get('#title').type('Nobody expects the Spanish Inquisition')
+			cy.get('#author').type('Monty Python')
+			cy.get('#url').type('https://www.montypython.com')
+			cy.get('#blogSaveBtn')
+				.click()
+				.get('#view')
+				.click()
+				.get('#deleteBtn')
+				.should('be.visible')
+        //logout
+        //add new user
+        // login second user
+        //check visibility of the DELETEBUTTOn0
+		})
 	})
 })

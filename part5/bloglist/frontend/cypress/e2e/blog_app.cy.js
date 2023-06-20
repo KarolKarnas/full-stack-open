@@ -23,7 +23,7 @@ describe('Blog app', function () {
 			cy.get('#login-button').click()
 
 			// cy.contains('Admin Karnas logged in')
-      cy.get('html').should('contain', 'Admin Karnas logged in')
+			cy.get('html').should('contain', 'Admin Karnas logged in')
 		})
 
 		it('fails with wrong credentials, notification shown with unsuccessful login is displayed red', function () {
@@ -82,8 +82,23 @@ describe('Blog app', function () {
 				.get('#likeBtn')
 				.click()
 
-    cy.get('html').should('contain', 'likes 1')
-    cy.get('html').should('not.contain', 'likes 0')
+			cy.get('html').should('contain', 'likes 1')
+			cy.get('html').should('not.contain', 'likes 0')
+		})
+
+		it.only('user who created blog can delete it', function () {
+			//will not work with more than 1 blogs
+
+			cy.get('#toggle-blog-form').click()
+			cy.get('#title').type('Nobody expects the Spanish Inquisition')
+			cy.get('#author').type('Monty Python')
+			cy.get('#url').type('https://www.montypython.com')
+			cy.get('#blogSaveBtn')
+				.click()
+				.get('#view')
+				.click()
+				.get('#deleteBtn')
+				.click()
 		})
 	})
 })

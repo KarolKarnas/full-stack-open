@@ -1,18 +1,15 @@
-/// <reference types="Cypress" />
+// /// <reference types="Cypress" />
 
 describe('Blog app', function () {
 	// debugger
 	beforeEach(function () {
-		cy.request('POST', 'http://localhost:3003/api/testing/reset')
+		cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
 		const user = {
 			name: 'Admin Karnas',
 			username: 'admin',
 			password: 'admin',
 		}
-
 		cy.createUser(user)
-		// cy.request('POST', 'http://localhost:3003/api/users', user)
-		// cy.visit('http://localhost:3000')
 	})
 
 	it('Login form is shown', function () {
@@ -104,6 +101,25 @@ describe('Blog app', function () {
 				cy.createUser(user)
 				cy.login({ username: 'admin2', password: 'admin2' })
 				cy.get('#view').click().get('#deleteBtn').should('not.exist')
+			})
+
+			it('blogs are ordered according to likes with the blog with the most likes being first', function () {
+				cy.createBlog({
+					title: '100 likes',
+					author: 'hundred',
+					url: 'https://www.hundred.com',
+					likes: 100,
+				})
+				cy.createBlog({
+					title: '10 likes',
+					author: 'ten',
+					url: 'https://www.ten.com',
+					likes: 10,
+				})
+
+				cy.get('.blog').eq(0).should('contain', '100 likes by hundred')
+				cy.get('.blog').eq(1).should('contain', '10 likes by ten')
+				cy.get('.blog').eq(2).should('contain', 'Nobody expects the Spanish Inquisition by Monty Python')
 			})
 		})
 	})

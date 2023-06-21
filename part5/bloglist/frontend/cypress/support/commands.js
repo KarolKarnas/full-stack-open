@@ -1,33 +1,33 @@
 Cypress.Commands.add('login', ({ username, password }) => {
-  cy.request('POST', 'http://localhost:3003/api/login', {
+  cy.request('POST',  `${Cypress.env('BACKEND')}/login`, {
     username, password
   }).then(({ body }) => {
     localStorage.setItem('loggedBlogAppUser', JSON.stringify(body))
-    cy.visit('http://localhost:3000')
+    cy.visit('')
   })
 })
 
-Cypress.Commands.add('createBlog', ({ title, author,url }) => {
+Cypress.Commands.add('createBlog', ({ title, author,url, likes }) => {
   cy.request({
-    url: 'http://localhost:3003/api/blogs',
+    url: `${Cypress.env('BACKEND')}/blogs`,
     method: 'POST',
-    body: { title, author, url },
+    body: { title, author, url, likes },
     headers: {
       'Authorization': `Bearer ${JSON.parse(localStorage.getItem('loggedBlogAppUser')).token}`
     }
   })
 
-  cy.visit('http://localhost:3000')
+  cy.visit('')
 })
 
 Cypress.Commands.add('createUser', ({ name, username, password }) => {
   cy.request({
-    url: 'http://localhost:3003/api/users',
+    url:  `${Cypress.env('BACKEND')}/users`,
     method: 'POST',
     body: { name, username, password },
  })
 
-  cy.visit('http://localhost:3000')
+  cy.visit('')
 })
 
 

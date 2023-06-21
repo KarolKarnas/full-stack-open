@@ -1,4 +1,7 @@
+/// <reference types="Cypress" />
+
 describe('Blog app', function () {
+	// debugger
 	beforeEach(function () {
 		cy.request('POST', 'http://localhost:3003/api/testing/reset')
 		const user = {
@@ -6,8 +9,10 @@ describe('Blog app', function () {
 			username: 'admin',
 			password: 'admin',
 		}
-		cy.request('POST', 'http://localhost:3003/api/users', user)
-		cy.visit('http://localhost:3000')
+
+		cy.createUser(user)
+		// cy.request('POST', 'http://localhost:3003/api/users', user)
+		// cy.visit('http://localhost:3000')
 	})
 
 	it('Login form is shown', function () {
@@ -17,17 +22,12 @@ describe('Blog app', function () {
 
 	describe('Login', function () {
 		it('succeeds with correct credentials', function () {
-			// cy.contains('log in').click()
-			cy.get('#username').type('admin')
-			cy.get('#password').type('admin')
-			cy.get('#login-button').click()
+			cy.login({ username: 'admin', password: 'admin' })
 
-			// cy.contains('Admin Karnas logged in')
 			cy.get('html').should('contain', 'Admin Karnas logged in')
 		})
 
 		it('fails with wrong credentials, notification shown with unsuccessful login is displayed red', function () {
-			// cy.contains('log in').click()
 			cy.get('#username').type('admin')
 			cy.get('#password').type('wrong')
 			cy.get('#login-button').click()
@@ -43,10 +43,7 @@ describe('Blog app', function () {
 
 	describe('When logged in', function () {
 		beforeEach(function () {
-			// cy.contains('log in').click()
-			cy.get('#username').type('admin')
-			cy.get('#password').type('admin')
-			cy.get('#login-button').click()
+			cy.login({ username: 'admin', password: 'admin' })
 		})
 
 		it('A blog can be created', function () {
@@ -70,54 +67,44 @@ describe('Blog app', function () {
 			)
 		})
 
-		it('users can like a blog', function () {
-			cy.get('#toggle-blog-form').click()
-			cy.get('#title').type('Nobody expects the Spanish Inquisition')
-			cy.get('#author').type('Monty Python')
-			cy.get('#url').type('https://www.montypython.com')
-			cy.get('#blogSaveBtn')
-				.click()
-				.get('#view')
-				.click()
-				.get('#likeBtn')
-				.click()
+		describe('When logged in and a blog is added', function () {
+			beforeEach(function () {
+				cy.createBlog({
+					title: 'Nobody expects the Spanish Inquisition',
+					author: 'Monty Python',
+					url: 'https://www.montypython.com',
+				})
+			})
 
-			cy.get('html').should('contain', 'likes 1')
-			cy.get('html').should('not.contain', 'likes 0')
-		})
+			it('users can like a blog', function () {
+				cy.get('#view').click().get('#likeBtn').click()
 
-		it.only('user who created blog can delete it', function () {
-			//will not work with more than 1 blogs
+				cy.get('html').should('contain', 'likes 1')
+				cy.get('html').should('not.contain', 'likes 0')
+			})
 
-			cy.get('#toggle-blog-form').click()
-			cy.get('#title').type('Nobody expects the Spanish Inquisition')
-			cy.get('#author').type('Monty Python')
-			cy.get('#url').type('https://www.montypython.com')
-			cy.get('#blogSaveBtn')
-				.click()
-				.get('#view')
-				.click()
-				.get('#deleteBtn')
-				.click()
-		})
+			it('user who created blog can delete it', function () {
+				cy.get('#view').click().get('#deleteBtn').click()
+				cy.get('.success')
+					.should(
+						'contain',
+						'Nobody expects the Spanish Inquisition by Monty Python DELETED!'
+					)
+					.and('have.css', 'color', 'rgb(0, 128, 0)')
+					.and('have.css', 'border-style', 'solid')
+			})
 
-		it.only('only the creator can see the delete button of a blog, not anyone else', function () {
-			//will not work with more than 1 blogs
-
-			cy.get('#toggle-blog-form').click()
-			cy.get('#title').type('Nobody expects the Spanish Inquisition')
-			cy.get('#author').type('Monty Python')
-			cy.get('#url').type('https://www.montypython.com')
-			cy.get('#blogSaveBtn')
-				.click()
-				.get('#view')
-				.click()
-				.get('#deleteBtn')
-				.should('be.visible')
-        //logout
-        //add new user
-        // login second user
-        //check visibility of the DELETEBUTTOn0
+			it('only the creator can see the delete button of a blog, not anyone else', function () {
+				cy.get('#logout-button').click()
+				const user = {
+					name: 'Admin Karol',
+					username: 'admin2',
+					password: 'admin2',
+				}
+				cy.createUser(user)
+				cy.login({ username: 'admin2', password: 'admin2' })
+				cy.get('#view').click().get('#deleteBtn').should('not.exist')
+			})
 		})
 	})
 })

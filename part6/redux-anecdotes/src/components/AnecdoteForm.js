@@ -12,10 +12,10 @@ const AnecdoteForm = () => {
     e.target.anecdote.value = ''
   //  const newAnecdote = await anecdoteService.createNew(content)
     dispatch(createAnecdote(content))
-    dispatch(createNotification(`you created '${content}'`))
-    setTimeout(() => {
-			dispatch(removeNotification())
-		}, 5000)
+    dispatch(createNotification(`you created '${content}'`, 5))
+    // setTimeout(() => {
+		// 	dispatch(removeNotification())
+		// }, 5000)
 	}
 
 return (

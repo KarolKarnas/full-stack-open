@@ -3,12 +3,16 @@ import Notification from './components/Notification'
 import { useQuery } from 'react-query'
 import { getAnecdotes } from './requests'
 
+
 const App = () => {
 	const handleVote = (anecdote) => {
 		console.log('vote')
 	}
 
-	const result = useQuery('anecdotes', getAnecdotes, { retry: 1 })
+	const result = useQuery('anecdotes', getAnecdotes, {
+		retry: 1,
+		refetchOnWindowFocus: false,
+	})
 	console.log(result)
 
 	if (result.isLoading) {

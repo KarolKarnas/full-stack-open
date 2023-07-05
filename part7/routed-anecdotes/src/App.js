@@ -1,6 +1,14 @@
-import { BrowserRouter as Router, Routes, Route, Link, useParams, Navigate, useNavigate } from 'react-router-dom'
+import {
+	BrowserRouter as Router,
+	Routes,
+	Route,
+	Link,
+	useParams,
+	useNavigate,
+} from 'react-router-dom'
 
 import { useState } from 'react'
+import { useField } from './hooks'
 
 const Menu = () => {
 	const padding = {
@@ -26,7 +34,9 @@ const AnecdoteList = ({ anecdotes }) => (
 		<h2>Anecdotes</h2>
 		<ul>
 			{anecdotes.map((anecdote) => (
-        <Link key={anecdote.id} to={`/anecdotes/${anecdote.id}`}><li>{anecdote.content}</li></Link>
+				<Link key={anecdote.id} to={`/anecdotes/${anecdote.id}`}>
+					<li>{anecdote.content}</li>
+				</Link>
 			))}
 		</ul>
 	</div>
@@ -65,24 +75,27 @@ const Footer = () => (
 	</div>
 )
 
-const CreateNew = ({addNew, setNotification}) => {
-	const [content, setContent] = useState('')
-	const [author, setAuthor] = useState('')
-	const [info, setInfo] = useState('')
-  const navigate = useNavigate()
+const CreateNew = ({ addNew, setNotification }) => {
+	const content = useField('text')
+	const author = useField('text')
+	const info = useField('text')
+	const navigate = useNavigate()
 
 	const handleSubmit = (e) => {
 		e.preventDefault()
-    const newAnecdote = {
-			content,
-			author,
-			info,
+		console.log(content)
+		const newAnecdote = {
+			content: content.value,
+			author: author.value,
+			info: info.value,
 			votes: 0,
 		}
 		addNew(newAnecdote)
-    navigate('/')
-    setNotification(`a new anecdote ${newAnecdote.content} created!`)
-    setTimeout(() => { setNotification('') }, 5000)
+		navigate('/')
+		setNotification(`a new anecdote ${newAnecdote.content} created!`)
+		setTimeout(() => {
+			setNotification('')
+		}, 5000)
 	}
 
 	return (
@@ -91,27 +104,15 @@ const CreateNew = ({addNew, setNotification}) => {
 			<form onSubmit={handleSubmit}>
 				<div>
 					content
-					<input
-						name='content'
-						value={content}
-						onChange={(e) => setContent(e.target.value)}
-					/>
+					<input {...content} />
 				</div>
 				<div>
 					author
-					<input
-						name='author'
-						value={author}
-						onChange={(e) => setAuthor(e.target.value)}
-					/>
+					<input {...author} />
 				</div>
 				<div>
 					url for more info
-					<input
-						name='info'
-						value={info}
-						onChange={(e) => setInfo(e.target.value)}
-					/>
+					<input {...info} />
 				</div>
 				<button>create</button>
 			</form>
@@ -119,20 +120,20 @@ const CreateNew = ({addNew, setNotification}) => {
 	)
 }
 
-const Anecdote = ({anecdotes}) => {
-const {id} = useParams()
-const anecdote = anecdotes.find(anecdote => anecdote.id === +id)
-console.log(anecdote)
+const Anecdote = ({ anecdotes }) => {
+	const { id } = useParams()
+	const anecdote = anecdotes.find((anecdote) => anecdote.id === +id)
+	console.log(anecdote)
 
-return (
-  <>
-  <h1>{anecdote.content}</h1>
-  <p>has {anecdote.votes} votes</p>
-  <p>for more info see <a href={anecdote.info}>{anecdote.info}</a></p>
-  </>
-  
-)
-
+	return (
+		<>
+			<h1>{anecdote.content}</h1>
+			<p>has {anecdote.votes} votes</p>
+			<p>
+				for more info see <a href={anecdote.info}>{anecdote.info}</a>
+			</p>
+		</>
+	)
 }
 
 const App = () => {
@@ -177,13 +178,21 @@ const App = () => {
 		<Router>
 			<div>
 				<h1>Software anecdotes</h1>
-        <p>{notification}</p>
+				<p>{notification}</p>
 				<Menu />
 
 				<Routes>
-          <Route path='anecdotes/:id' element={<Anecdote anecdotes={anecdotes}/>} />
+					<Route
+						path='anecdotes/:id'
+						element={<Anecdote anecdotes={anecdotes} />}
+					/>
 					<Route path='/' element={<AnecdoteList anecdotes={anecdotes} />} />
-					<Route path='/create' element={<CreateNew addNew={addNew} setNotification={setNotification} />} />
+					<Route
+						path='/create'
+						element={
+							<CreateNew addNew={addNew} setNotification={setNotification} />
+						}
+					/>
 					<Route path='/about' element={<About />} />
 				</Routes>
 

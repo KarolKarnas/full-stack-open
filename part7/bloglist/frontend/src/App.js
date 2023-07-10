@@ -1,19 +1,23 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useReducer } from 'react'
 
 import Blog from './components/Blog'
 import Footer from './components/Footer'
+
 import Notification from './components/Notification'
+import notificationReducer from './components/NotificationReducer'
+// import NotificationContext from './components/NotificationContext'
+
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
 
+
+
 const App = () => {
 	const [blogs, setBlogs] = useState([])
-
-	const [successMessage, setSuccessMessage] = useState(null)
-	const [errorMessage, setErrorMessage] = useState(null)
+	const [notification, notificationDispatch] = useReducer(notificationReducer, null)
 
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
@@ -51,10 +55,16 @@ const App = () => {
 			setPassword('')
 		} catch (error) {
 			const message = error.response.data.error
-			setErrorMessage(message)
+			notificationDispatch({
+				type: 'SET_MESSAGE',
+				payload: {
+					msg: message,
+					type: 'ERROR',
+				},
+			})
 			setTimeout(() => {
-				setErrorMessage(null)
-			}, 5000)
+				notificationDispatch({ type: 'REMOVE_MESSAGE' })
+			}, 2000)
 		}
 	}
 
@@ -72,18 +82,28 @@ const App = () => {
 			const newBlog = response.data
 			const updatedBlogs = await blogService.getAll()
 			setBlogs(updatedBlogs)
-			setSuccessMessage(
-				`a new blog ${newBlog.title}! By ${newBlog.author} added!`
-			)
+			notificationDispatch({
+				type: 'SET_MESSAGE',
+				payload: {
+					msg: `a new blog ${newBlog.title}! By ${newBlog.author} added!`,
+					type: 'SUCCESS',
+				},
+			})
 			setTimeout(() => {
-				setSuccessMessage(null)
-			}, 5000)
+				notificationDispatch({ type: 'REMOVE_MESSAGE' })
+			}, 2000)
 		} catch (error) {
 			const message = error.response.data.error
-			setErrorMessage(message)
+			notificationDispatch({
+				type: 'SET_MESSAGE',
+				payload: {
+					msg: message,
+					type: 'ERROR',
+				},
+			})
 			setTimeout(() => {
-				setErrorMessage(null)
-			}, 5000)
+				notificationDispatch({ type: 'REMOVE_MESSAGE' })
+			}, 2000)
 		}
 	}
 
@@ -99,18 +119,32 @@ const App = () => {
 			const updatedBlog = response.data
 			const updatedBlogs = await blogService.getAll()
 			setBlogs(updatedBlogs)
-			setSuccessMessage(
-				`LIKE ADDED TO ${updatedBlog.title}! By ${updatedBlog.author} ADDED!`
-			)
+
+			notificationDispatch({
+				type: 'SET_MESSAGE',
+				payload: {
+					msg: `LIKE ADDED TO ${updatedBlog.title}! By ${updatedBlog.author} ADDED!`,
+					type: 'SUCCESS',
+				},
+			})
+
 			setTimeout(() => {
-				setSuccessMessage(null)
-			}, 5000)
+				notificationDispatch({
+					type: 'REMOVE_MESSAGE',
+				})
+			}, 2000)
 		} catch (error) {
 			const message = error.response.data.error
-			setErrorMessage(message)
+			notificationDispatch({
+				type: 'SET_MESSAGE',
+				payload: {
+					msg: message,
+					type: 'ERROR',
+				},
+			})
 			setTimeout(() => {
-				setErrorMessage(null)
-			}, 5000)
+				notificationDispatch({ type: 'REMOVE_MESSAGE' })
+			}, 2000)
 		}
 	}
 
@@ -125,18 +159,30 @@ const App = () => {
 				await blogService.remove(id)
 				const updatedBlogs = await blogService.getAll()
 				setBlogs(updatedBlogs)
-				setSuccessMessage(
-					`${blogObject.title} by ${blogObject.author} DELETED!`
-				)
+
+				notificationDispatch({
+					type: 'SET_MESSAGE',
+					payload: {
+						msg: `${blogObject.title} by ${blogObject.author} DELETED!`,
+						type: 'SUCCESS',
+					},
+				})
+
 				setTimeout(() => {
-					setSuccessMessage(null)
-				}, 5000)
+					notificationDispatch({ type: 'REMOVE_MESSAGE' })
+				}, 2000)
 			} catch (error) {
 				const message = error.response.data.error
-				setErrorMessage(message)
+				notificationDispatch({
+					type: 'SET_MESSAGE',
+					payload: {
+						msg: message,
+						type: 'ERROR',
+					},
+				})
 				setTimeout(() => {
-					setErrorMessage(null)
-				}, 5000)
+					notificationDispatch({ type: 'REMOVE_MESSAGE' })
+				}, 2000)
 			}
 		}
 	}
@@ -173,17 +219,17 @@ const App = () => {
 		<div>
 			<h1>Blog list</h1>
 
-			<Notification
-				errorMessage={errorMessage}
-				successMessage={successMessage}
-			/>
+			<Notification notification={notification} />
 
 			{user === null ? (
 				loginForm()
 			) : (
 				<>
 					<p>
-						{user.name} logged in <button id='logout-button' onClick={handleLogout}>Logout</button>
+						{user.name} logged in{' '}
+						<button id='logout-button' onClick={handleLogout}>
+							Logout
+						</button>
 					</p>
 					<Togglable buttonLabel='add new blog!' ref={blogFormRef}>
 						<BlogForm createBlog={addBlog} />

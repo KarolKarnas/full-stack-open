@@ -13,7 +13,7 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
-	const [blogs, setBlogs] = useState([])
+	// const [blogs, setBlogs] = useState([])
 	const { setNotification } = useContext(NotificationContext)
 
 	const [username, setUsername] = useState('')
@@ -25,6 +25,7 @@ const App = () => {
 	const queryClient = useQueryClient()
 
 	const result = useQuery('blogs', blogService.getAll)
+	const blogs = result.data
 	const newBlogMutation = useMutation(blogService.create, {
 		onSuccess: (res) => {
 			if (res.status === 201) {
@@ -44,11 +45,11 @@ const App = () => {
 	// setBlogs(result.data)
 	// console.log(result.data)
 
-	useEffect(() => {
-		if (result.isSuccess) {
-			setBlogs(result.data)
-		}
-	}, [result.data])
+	// useEffect(() => {
+	// 	if (result.isSuccess) {
+	// 		setBlogs(result.data)
+	// 	}
+	// }, [result.data])
 
 	useEffect(() => {
 		const loggedUserJSON = localStorage.getItem('loggedBlogAppUser')
@@ -177,6 +178,10 @@ const App = () => {
 			</button>
 		</form>
 	)
+
+	if (result.isLoading) {
+		return <div>loading data...</div>
+	}
 
 	return (
 		<div>

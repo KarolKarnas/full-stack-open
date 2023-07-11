@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useContext } from 'react'
 import NotificationContext from './components/NotificationContext'
 
+import UserContext from './components/UserContext'
+
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 
 import Blog from './components/Blog'
@@ -15,10 +17,14 @@ import loginService from './services/login'
 const App = () => {
 	// const [blogs, setBlogs] = useState([])
 	const { setNotification } = useContext(NotificationContext)
+	const { userState, loginUser, logoutUser } = useContext(UserContext)
+	console.log(userState)
 
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 	const [user, setUser] = useState(null)
+
+	// console.log('user useState ', user)
 
 	const blogFormRef = useRef()
 	//REACT QUERY
@@ -71,11 +77,15 @@ const App = () => {
 		},
 	})
 
+	// LOGIN
+
 	useEffect(() => {
 		const loggedUserJSON = localStorage.getItem('loggedBlogAppUser')
 		if (loggedUserJSON) {
 			const user = JSON.parse(loggedUserJSON)
-			setUser(user)
+			console.log('user useEffect ', user)
+			loginUser(user, 'LOGIN')
+			setUser(userState)
 			blogService.setToken(user.token)
 		}
 	}, [])
@@ -90,7 +100,11 @@ const App = () => {
 			})
 			localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
 			blogService.setToken(user.token)
-			setUser(user)
+			//reducer
+			await loginUser(user, 'LOGIN')
+			console.log(user)
+			setUser(userState)
+			// setUser(user)
 			setUsername('')
 			setPassword('')
 		} catch (error) {
@@ -103,7 +117,8 @@ const App = () => {
 		e.preventDefault()
 		blogService.setToken(null)
 		localStorage.removeItem('loggedBlogAppUser', JSON.stringify(user))
-		setUser(null)
+		logoutUser()
+		setUser(userState)
 	}
 
 	const addBlog = async (blogObject) => {
@@ -184,13 +199,13 @@ const App = () => {
 
 			{/* <Notification notification={notification} /> */}
 			<Notification />
-
-			{user === null ? (
+{/* here  */}
+			{userState === null ? (
 				loginForm()
 			) : (
 				<>
 					<p>
-						{user.name} logged in{' '}
+						{userState.name} logged in{' '}
 						<button id='logout-button' onClick={handleLogout}>
 							Logout
 						</button>
@@ -207,7 +222,7 @@ const App = () => {
 								blog={blog}
 								addLike={addLike}
 								deleteBlog={deleteBlog}
-								username={user.username}
+								username={userState.username}
 							/>
 						))}
 				</>

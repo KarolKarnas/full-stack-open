@@ -26,30 +26,50 @@ const App = () => {
 
 	const result = useQuery('blogs', blogService.getAll)
 	const blogs = result.data
+
 	const newBlogMutation = useMutation(blogService.create, {
 		onSuccess: (res) => {
-			if (res.status === 201) {
-				const blogObject = res.data
-				queryClient.invalidateQueries('blogs')
-				setNotification(
-					`a new blog ${blogObject.title}! By ${blogObject.author} added!`,
-					'SUCCESS'
-				)
-			}
+			const blogObject = res.data
+			queryClient.invalidateQueries('blogs')
+			setNotification(
+				`a new blog ${blogObject.title}! By ${blogObject.author} added!`,
+				'SUCCESS'
+			)
 		},
 		onError: (error) => {
-			console.log(error)
 			setNotification(error.response.data.error, 'ERROR')
 		},
 	})
-	// setBlogs(result.data)
-	// console.log(result.data)
 
-	// useEffect(() => {
-	// 	if (result.isSuccess) {
-	// 		setBlogs(result.data)
-	// 	}
-	// }, [result.data])
+	const updateBlogMutation = useMutation(blogService.update, {
+		onSuccess: (res) => {
+			console.log(res)
+			const updatedBlog = res.data
+			queryClient.invalidateQueries('blogs')
+			setNotification(
+				`LIKE ADDED TO ${updatedBlog.title}! By ${updatedBlog.author} ADDED!`,
+				'SUCCESS'
+			)
+		},
+		onError: (error) => {
+			setNotification(error.response.data.error, 'ERROR')
+		},
+	})
+
+	const removeBlogMutation = useMutation(blogService.remove, {
+		onSuccess: (res) => {
+			console.log(res)
+			const blogObject = res.data
+			queryClient.invalidateQueries('blogs')
+			setNotification(
+				`${blogObject.title} by ${blogObject.author} DELETED!`,
+				'SUCCESS'
+			)
+		},
+		onError: (error) => {
+			setNotification(error.response.data.error, 'ERROR')
+		},
+	})
 
 	useEffect(() => {
 		const loggedUserJSON = localStorage.getItem('loggedBlogAppUser')
@@ -112,20 +132,7 @@ const App = () => {
 		const blogToUpdate = { user, likes: updatedLikes, author, title, url }
 		const id = blogObject.id
 
-		try {
-			const response = await blogService.update(blogToUpdate, id)
-			const updatedBlog = response.data
-			const updatedBlogs = await blogService.getAll()
-			setBlogs(updatedBlogs)
-
-			setNotification(
-				`LIKE ADDED TO ${updatedBlog.title}! By ${updatedBlog.author} ADDED!`,
-				'SUCCESS'
-			)
-		} catch (error) {
-			const message = error.response.data.error
-			setNotification(message, 'ERROR')
-		}
+		updateBlogMutation.mutate([blogToUpdate, id])
 	}
 
 	const deleteBlog = async (blogObject) => {
@@ -135,19 +142,7 @@ const App = () => {
 			)
 		) {
 			const { id } = blogObject
-			try {
-				await blogService.remove(id)
-				const updatedBlogs = await blogService.getAll()
-				setBlogs(updatedBlogs)
-
-				setNotification(
-					`${blogObject.title} by ${blogObject.author} DELETED!`,
-					'SUCCESS'
-				)
-			} catch (error) {
-				const message = error.response.data.error
-				setNotification(message, 'ERROR')
-			}
+			removeBlogMutation.mutate([id])
 		}
 	}
 

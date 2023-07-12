@@ -1,11 +1,16 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+
+import Home from './pages/Home'
+import Blogs from './components/Blogs'
+
 import { useState, useEffect, useRef, useContext } from 'react'
 import NotificationContext from './components/NotificationContext'
 
 import UserContext from './components/UserContext'
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import Blog from './components/Blog'
+// import Blog from './components/Blog'
 import Footer from './components/Footer'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
@@ -31,8 +36,8 @@ const App = () => {
 
 	const queryClient = useQueryClient()
 
-	const result = useQuery(['blogs'], blogService.getAll)
-	const blogs = result.data
+	// const result = useQuery(['blogs'], blogService.getAll)
+	// const blogs = result.data
 
 	const newBlogMutation = useMutation(blogService.create, {
 		onSuccess: (res) => {
@@ -40,36 +45,6 @@ const App = () => {
 			queryClient.invalidateQueries('blogs')
 			setNotification(
 				`a new blog ${blogObject.title}! By ${blogObject.author} added!`,
-				'SUCCESS'
-			)
-		},
-		onError: (error) => {
-			setNotification(error.response.data.error, 'ERROR')
-		},
-	})
-
-	const updateBlogMutation = useMutation(blogService.update, {
-		onSuccess: (res) => {
-			// console.log(res)
-			const updatedBlog = res.data
-			queryClient.invalidateQueries('blogs')
-			setNotification(
-				`LIKE ADDED TO ${updatedBlog.title}! By ${updatedBlog.author} ADDED!`,
-				'SUCCESS'
-			)
-		},
-		onError: (error) => {
-			setNotification(error.response.data.error, 'ERROR')
-		},
-	})
-
-	const removeBlogMutation = useMutation(blogService.remove, {
-		onSuccess: (res) => {
-			// console.log(res)
-			const blogObject = res.data
-			queryClient.invalidateQueries('blogs')
-			setNotification(
-				`${blogObject.title} by ${blogObject.author} DELETED!`,
 				'SUCCESS'
 			)
 		},
@@ -138,27 +113,6 @@ const App = () => {
 		// }
 	}
 
-	const addLike = async (blogObject) => {
-		const user = blogObject.user.id
-		const { author, title, url, likes } = blogObject
-		const updatedLikes = likes + 1
-		const blogToUpdate = { user, likes: updatedLikes, author, title, url }
-		const id = blogObject.id
-
-		updateBlogMutation.mutate([blogToUpdate, id])
-	}
-
-	const deleteBlog = async (blogObject) => {
-		if (
-			window.confirm(
-				`Do you really want to delete ${blogObject.title} by ${blogObject.author}?`
-			)
-		) {
-			const { id } = blogObject
-			removeBlogMutation.mutate([id])
-		}
-	}
-
 	const loginForm = () => (
 		<form id='login-form' onSubmit={handleLogin}>
 			<div>
@@ -187,49 +141,52 @@ const App = () => {
 		</form>
 	)
 
-	if (result.isLoading) {
-		return <div>loading data...</div>
-	}
+	// if (result.isLoading) {
+	// 	return <div>loading data...</div>
+	// }
 
 	return (
-		<div>
-			<h1>Blog list</h1>
+		<Router>
+			<div>
+				<h1>Blog list</h1>
 
-			{/* <Notification notification={notification} /> */}
-			<Notification />
-			{userState === null || userState.isAuth === false ? (
-				loginForm()
-			) : (
-				<>
-					<p>
-						{userState.name} logged in{' '}
-						<button id='logout-button' onClick={handleLogout}>
-							Logout
-						</button>
-					</p>
-					<Togglable buttonLabel='add new blog!' ref={blogFormRef}>
-						<BlogForm createBlog={addBlog} />
-					</Togglable>
-					<h2>Users</h2>
-					 <Users />
+				<Notification />
+				{userState === null || userState.isAuth === false ? (
+					loginForm()
+				) : (
+					<>
+						<p>
+							{userState.name} logged in{' '}
+							<button id='logout-button' onClick={handleLogout}>
+								Logout
+							</button>
+						</p>
+						<Togglable buttonLabel='add new blog!' ref={blogFormRef}>
+							<BlogForm createBlog={addBlog} />
+						</Togglable>
+						<Routes>
+							<Route path='/' element={<Home />}></Route>
+							<Route path='/users' element={<Users />} />
+							<Route path='/blogs' element={<Blogs />} />
+						</Routes>
+						{/* <h2>Blogs</h2>
+						{blogs
+							.sort((a, b) => b.likes - a.likes)
+							.map((blog) => (
+								<Blog
+									key={blog.id}
+									blog={blog}
+									addLike={addLike}
+									deleteBlog={deleteBlog}
+									username={userState.username}
+								/>
+							))} */}
+					</>
+				)}
 
-					<h2>Blogs</h2>
-					{blogs
-						.sort((a, b) => b.likes - a.likes)
-						.map((blog) => (
-							<Blog
-								key={blog.id}
-								blog={blog}
-								addLike={addLike}
-								deleteBlog={deleteBlog}
-								username={userState.username}
-							/>
-						))}
-				</>
-			)}
-
-			<Footer />
-		</div>
+				<Footer />
+			</div>
+		</Router>
 	)
 }
 

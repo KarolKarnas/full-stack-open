@@ -13,6 +13,7 @@ const Users = () => {
   if (isSuccess) {
     return (
       <>
+      <h2>Users</h2>
         {data.map((user) => (
           <User
             key={user.id}

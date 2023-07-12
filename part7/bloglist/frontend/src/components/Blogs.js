@@ -1,15 +1,19 @@
 import blogService from '../services/blogs'
 import Blog from './Blog'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import UserContext from './UserContext'
+import NotificationContext from './NotificationContext'
 import { useContext } from 'react'
 
+
 const Blogs = () => {
+	const queryClient = useQueryClient()
 	const { isSuccess, isLoading, data } = useQuery(['blogs'], blogService.getAll)
 
-  const { userState } = useContext(UserContext)
+  const { setNotification } = useContext(NotificationContext)
+	const { userState } = useContext(UserContext)
 
-  const updateBlogMutation = useMutation(blogService.update, {
+	const updateBlogMutation = useMutation(blogService.update, {
 		onSuccess: (res) => {
 			// console.log(res)
 			const updatedBlog = res.data
@@ -39,7 +43,7 @@ const Blogs = () => {
 		},
 	})
 
-  const addLike = async (blogObject) => {
+	const addLike = async (blogObject) => {
 		const user = blogObject.user.id
 		const { author, title, url, likes } = blogObject
 		const updatedLikes = likes + 1

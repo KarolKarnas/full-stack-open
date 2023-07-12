@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import Home from './pages/Home'
 import Blogs from './components/Blogs'
+import Navigation from './components/Navigation'
 
 import { useState, useEffect, useRef, useContext } from 'react'
 import NotificationContext from './components/NotificationContext'
@@ -10,7 +11,6 @@ import UserContext from './components/UserContext'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-// import Blog from './components/Blog'
 import Footer from './components/Footer'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
@@ -20,7 +20,6 @@ import Users from './components/Users'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
-// import userService from './services/users'
 
 const App = () => {
 	// const [blogs, setBlogs] = useState([])
@@ -149,7 +148,7 @@ const App = () => {
 		<Router>
 			<div>
 				<h1>Blog list</h1>
-
+				<Navigation></Navigation>
 				<Notification />
 				{userState === null || userState.isAuth === false ? (
 					loginForm()
@@ -169,18 +168,6 @@ const App = () => {
 							<Route path='/users' element={<Users />} />
 							<Route path='/blogs' element={<Blogs />} />
 						</Routes>
-						{/* <h2>Blogs</h2>
-						{blogs
-							.sort((a, b) => b.likes - a.likes)
-							.map((blog) => (
-								<Blog
-									key={blog.id}
-									blog={blog}
-									addLike={addLike}
-									deleteBlog={deleteBlog}
-									username={userState.username}
-								/>
-							))} */}
 					</>
 				)}
 

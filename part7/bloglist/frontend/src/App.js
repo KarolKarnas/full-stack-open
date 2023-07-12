@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from 'react'
+import { useState, useRef, useContext } from 'react'
 import NotificationContext from './components/NotificationContext'
 
 import UserContext from './components/UserContext'
@@ -22,12 +22,13 @@ const App = () => {
 
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
-	const [user, setUser] = useState(null)
+	// const [user, setUser] = useState(null)
 
 	// console.log('user useState ', user)
-
 	const blogFormRef = useRef()
 	//REACT QUERY
+
+
 	const queryClient = useQueryClient()
 
 	const result = useQuery('blogs', blogService.getAll)
@@ -49,7 +50,7 @@ const App = () => {
 
 	const updateBlogMutation = useMutation(blogService.update, {
 		onSuccess: (res) => {
-			console.log(res)
+			// console.log(res)
 			const updatedBlog = res.data
 			queryClient.invalidateQueries('blogs')
 			setNotification(
@@ -64,7 +65,7 @@ const App = () => {
 
 	const removeBlogMutation = useMutation(blogService.remove, {
 		onSuccess: (res) => {
-			console.log(res)
+			// console.log(res)
 			const blogObject = res.data
 			queryClient.invalidateQueries('blogs')
 			setNotification(
@@ -79,31 +80,31 @@ const App = () => {
 
 	// LOGIN
 
-	useEffect(() => {
-		const loggedUserJSON = localStorage.getItem('loggedBlogAppUser')
-		if (loggedUserJSON) {
-			const user = JSON.parse(loggedUserJSON)
-			console.log('user useEffect ', user)
-			loginUser(user, 'LOGIN')
-			setUser(userState)
-			blogService.setToken(user.token)
-		}
-	}, [])
+	// useEffect( () => {
+	// 	const loggedUserJSON = localStorage.getItem('loggedBlogAppUser')
+	// 	if (loggedUserJSON) {
+	// 		const userState = JSON.parse(loggedUserJSON)
+	// 		console.log('user useEffect ', userState)
+	// 		loginUser(userState, 'LOGIN')
+	// 		blogService.setToken(userState.token)
+	// 		// setUser(userState)
+	// 	}
+	// }, [])
 
 	const handleLogin = async (event) => {
 		event.preventDefault()
 
 		try {
-			const user = await loginService.login({
+			const userState = await loginService.login({
 				username,
 				password,
 			})
-			localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
-			blogService.setToken(user.token)
+			localStorage.setItem('loggedBlogAppUser', JSON.stringify(userState))
+			blogService.setToken(userState.token)
 			//reducer
-			await loginUser(user, 'LOGIN')
-			console.log(user)
-			setUser(userState)
+			loginUser(userState, 'LOGIN')
+			// console.log(user)
+			// setUser(userState)
 			// setUser(user)
 			setUsername('')
 			setPassword('')
@@ -116,9 +117,9 @@ const App = () => {
 	const handleLogout = (e) => {
 		e.preventDefault()
 		blogService.setToken(null)
-		localStorage.removeItem('loggedBlogAppUser', JSON.stringify(user))
+		localStorage.removeItem('loggedBlogAppUser', JSON.stringify(userState))
 		logoutUser()
-		setUser(userState)
+		// setUser(userState)
 	}
 
 	const addBlog = async (blogObject) => {
@@ -200,7 +201,8 @@ const App = () => {
 			{/* <Notification notification={notification} /> */}
 			<Notification />
 {/* here  */}
-			{userState === null ? (
+{console.log('returnn', userState)}
+			{ userState === null || userState.isAuth === false ? (
 				loginForm()
 			) : (
 				<>

@@ -5,7 +5,7 @@ import App from './App'
 import { NotificationContextProvider } from './components/NotificationContext'
 // import { AuthProvider } from './components/AuthContext/AuthContext'
 import { UserContextProvider } from './components/UserContext'
-import { QueryClient, QueryClientProvider } from 'react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 // import { ReactQueryDevtools } from 'react-query/devtools'
 
 const queryClient = new QueryClient()

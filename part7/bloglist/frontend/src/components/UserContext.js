@@ -1,31 +1,22 @@
 import { createContext, useReducer } from 'react'
+// import blogService from '../services/blogs'
 
-// const initialState = {
-// 	isAuth: true,
-// 	token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZ…5NjF9.WyUXfI3kIZ48xdYm5Fwct0-5PNOZROYx7_BXyIjXQLc",
-// 	username: "admin admin",
-// 	name: "admin"
+// const getInitialState = () => {
+// 	const loggedUserJSON = localStorage.getItem('loggedBlogAppUser')
+// 	if (loggedUserJSON) {
+// 		const userState = JSON.parse(loggedUserJSON)
+// 		blogService.setToken(userState.token)
+// console.log(userState)
+// 		return (userState)
+
+// 	}
 // }
 
-const getInitialState = () => {
-	const loggedUserJSON = localStorage.getItem('loggedBlogAppUser')
-	// console.log('dasdasd', loggedUserJSON)
-	if (loggedUserJSON) {
-		const userState = JSON.parse(loggedUserJSON)
-		// console.log('EFFECT', userState)
-		// loginUser(userState, 'LOGIN')
-		// blogService.setToken(userState.token)
-		return (userState)
+// const initialState = getInitialState()
 
-	}
-}
-
-const initialState = getInitialState()
-
-const userReducer = (state = initialState, action) => {
+const userReducer = (state, action) => {
 	switch (action.type) {
 		case 'LOGIN':
-			// console.log('payload ',action.payload)
 			return {
 				...state,
 				isAuth: true,

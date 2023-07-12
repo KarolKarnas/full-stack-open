@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Blogs from './components/Blogs'
 import Navigation from './components/Navigation'
+import UserPage from './pages/UserPage'
 
 import { useState, useEffect, useRef, useContext } from 'react'
 import NotificationContext from './components/NotificationContext'
@@ -167,6 +168,7 @@ const App = () => {
 							<Route path='/' element={<Home />}></Route>
 							<Route path='/users' element={<Users />} />
 							<Route path='/blogs' element={<Blogs />} />
+							<Route path='/users/:id' element={<UserPage />} />
 						</Routes>
 					</>
 				)}

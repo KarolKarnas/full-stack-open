@@ -12,6 +12,13 @@ usersRouter.get('/', async (request, response) => {
 	response.json(users)
 })
 
+//Get user with blogs fo fun
+usersRouter.get('/:id/blogs', async (request, response) => {
+	const user = await User.findById(request.params.id)
+	response.json(user.blogs)
+})
+
+
 usersRouter.post('/', async (request, response) => {
 	const { username, name, password } = request.body
 

@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 import blogService from '../services/blogs'
+// import Comments from '../components/Comments'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import NotificationContext from '../components/NotificationContext'
 import { useContext } from 'react'
@@ -56,6 +57,13 @@ const BlogPage = () => {
 					</button>
 				</p>
 				<p>added by {blog.user.username}</p>
+				{/* <Comments /> */}
+				<h2>Comments</h2>
+				<ul>
+          {blog.comments.map((comment) => (
+            <li key={comment.id}>{comment.text}</li>
+          ))}
+        </ul>
 			</>
 		)
 	}

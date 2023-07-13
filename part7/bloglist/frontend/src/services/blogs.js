@@ -12,6 +12,15 @@ const getAll = () => {
 	return request.then((response) => response.data)
 }
 
+
+// Alternative Solution
+// const getComments =  (id) => {
+// 	const url = `${baseUrl}/${id}/comments`
+
+// 	const request = axios.get(url)
+// 	return request.then((response) => response.data)
+// }
+
 const create = async (newObject) => {
 	const config = {
 		headers: { Authorization: token },
@@ -38,4 +47,4 @@ const remove = async ([id]) => {
 	return response
 }
 
-export default { getAll, create, setToken, update, remove }
+export default { getAll, getComments, create, setToken, update, remove }

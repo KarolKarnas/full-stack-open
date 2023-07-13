@@ -3,9 +3,18 @@ const middleware = require('../utils/middleware')
 const Blog = require('../models/blog')
 
 blogsRouter.get('/', async (request, response) => {
-	const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
+	const blogs = await Blog.find({})
+		.populate('user', { username: 1, name: 1 })
+		.populate('comments', { text: 1 })
 	response.json(blogs)
 })
+
+//  get comments of the blog
+blogsRouter.get('/:id/comments', async (request, response) => {
+	const blog = await Blog.findById(request.params.id).populate('comments', { text: 1 })
+	response.json(blog.comments)
+})
+
 
 blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
 	const { title, author, url, likes } = request.body

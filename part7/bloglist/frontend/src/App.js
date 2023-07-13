@@ -4,6 +4,7 @@ import Home from './pages/Home'
 import Blogs from './components/Blogs'
 import Navigation from './components/Navigation'
 import UserPage from './pages/UserPage'
+import BlogPage from './pages/BlogPage'
 
 import { useState, useEffect, useRef, useContext } from 'react'
 import NotificationContext from './components/NotificationContext'
@@ -169,6 +170,7 @@ const App = () => {
 							<Route path='/users' element={<Users />} />
 							<Route path='/blogs' element={<Blogs />} />
 							<Route path='/users/:id' element={<UserPage />} />
+							<Route path='/blogs/:id' element={<BlogPage />} />
 						</Routes>
 					</>
 				)}

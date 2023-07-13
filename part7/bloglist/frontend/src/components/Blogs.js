@@ -4,6 +4,7 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import UserContext from './UserContext'
 import NotificationContext from './NotificationContext'
 import { useContext } from 'react'
+import { Link } from 'react-router-dom'
 
 
 const Blogs = () => {
@@ -74,6 +75,7 @@ const Blogs = () => {
 				{data
 					.sort((a, b) => b.likes - a.likes)
 					.map((blog) => (
+						<Link key={blog.id} to={`/blogs/${blog.id}`}>
 						<Blog
 							key={blog.id}
 							blog={blog}
@@ -81,6 +83,7 @@ const Blogs = () => {
 							deleteBlog={deleteBlog}
 							username={userState.username}
 						/>
+						</Link>
 					))}
 			</>
 		)

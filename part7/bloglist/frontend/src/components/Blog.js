@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 const Blog = ({ blog, addLike, deleteBlog, username }) => {
-	const [blogVisible, setBlogVisible] = useState(true)
+	const [blogVisible, setBlogVisible] = useState(false)
 
 	const toggleBlogVisibility = () => {
 		setBlogVisible(!blogVisible)

@@ -40,8 +40,6 @@ const App = () => {
 	// const result = useQuery(['blogs'], blogService.getAll)
 	// const blogs = result.data
 
-
-
 	// LOGIN
 
 	useEffect(() => {
@@ -117,31 +115,39 @@ const App = () => {
 	}
 
 	const loginForm = () => (
-		<form id='login-form' onSubmit={handleLogin}>
-			<div>
-				username
-				<input
-					id='username'
-					type='text'
-					value={username}
-					name='Username'
-					onChange={({ target }) => setUsername(target.value)}
-				/>
-			</div>
-			<div>
-				password
-				<input
-					id='password'
-					type='password'
-					value={password}
-					name='Password'
-					onChange={({ target }) => setPassword(target.value)}
-				/>
-			</div>
-			<button id='login-button' type='submit'>
-				log in
-			</button>
-		</form>
+		<div className='grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 mb-8 gap-8'>
+			<form id='login-form' onSubmit={handleLogin}>
+				<div>
+					username
+					<input
+						id='username'
+						className='w-full pr-40 bg-gray-200 input input-sm text-black'
+						type='text'
+						value={username}
+						name='Username'
+						onChange={({ target }) => setUsername(target.value)}
+					/>
+				</div>
+				<div>
+					password
+					<input
+						id='password'
+						className='w-full pr-40 bg-gray-200 input input-sm text-black'
+						type='password'
+						value={password}
+						name='Password'
+						onChange={({ target }) => setPassword(target.value)}
+					/>
+				</div>
+				<button
+					id='login-button'
+					type='submit'
+					className='w-36 btn btn-lg bg-gray-300'
+				>
+					log in
+				</button>
+			</form>
+		</div>
 	)
 
 	// if (result.isLoading) {
@@ -150,33 +156,34 @@ const App = () => {
 
 	return (
 		<Router>
-			<div>
-				<h1>Blog list</h1>
-				<Navigation></Navigation>
+			<div className='flex flex-col justify-between h-screen'>
+				{/* <h1 className='text-3xl font-bold'>Blog list</h1> */}
+				<Navigation />
 				<Notification />
-				{userState === null || userState.isAuth === false ? (
-					loginForm()
-				) : (
-					<>
-						<p>
-							{userState.name} logged in{' '}
-							<button id='logout-button' onClick={handleLogout}>
-								Logout
-							</button>
-						</p>
-						<Togglable buttonLabel='add new blog!' ref={blogFormRef}>
-							<BlogForm createBlog={addBlog} />
-						</Togglable>
-						<Routes>
-							<Route path='/' element={<Home />}></Route>
-							<Route path='/users' element={<Users />} />
-							<Route path='/blogs' element={<Blogs />} />
-							<Route path='/users/:id' element={<UserPage />} />
-							<Route path='/blogs/:id' element={<BlogPage />} />
-						</Routes>
-					</>
-				)}
-
+				<main className='container mx-auto px-3 pb-12 flex-grow'>
+					{userState === null || userState.isAuth === false ? (
+						loginForm()
+					) : (
+						<>
+							<p>
+								<strong>{userState.name}</strong> logged in{' '}
+								<button id='logout-button' onClick={handleLogout} className='w-36 btn btn-sm bg-gray-300'>
+									Logout
+								</button>
+							</p>
+							<Togglable buttonLabel='add new blog!' ref={blogFormRef}>
+								<BlogForm createBlog={addBlog} />
+							</Togglable>
+							<Routes>
+								<Route path='/' element={<Home />}></Route>
+								<Route path='/users' element={<Users />} />
+								<Route path='/blogs' element={<Blogs />} />
+								<Route path='/users/:id' element={<UserPage />} />
+								<Route path='/blogs/:id' element={<BlogPage />} />
+							</Routes>
+						</>
+					)}
+				</main>
 				<Footer />
 			</div>
 		</Router>

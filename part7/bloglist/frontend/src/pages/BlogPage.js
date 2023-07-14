@@ -4,6 +4,7 @@ import blogService from '../services/blogs'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import NotificationContext from '../components/NotificationContext'
 import { useContext, useRef } from 'react'
+import { Link } from 'react-router-dom'
 
 const BlogPage = () => {
 	const params = useParams()
@@ -11,6 +12,7 @@ const BlogPage = () => {
 	const commentInput = useRef(null)
 
 	const { isSuccess, isLoading, data } = useQuery(['blogs'], blogService.getAll)
+	// const usersData = useQuery(['users'], userService.getAll)
 	const { setNotification } = useContext(NotificationContext)
 
 	const updateBlogMutation = useMutation(blogService.update, {
@@ -31,11 +33,8 @@ const BlogPage = () => {
 		onSuccess: (res) => {
 			const text = res.data.text
 			queryClient.invalidateQueries('blogs')
-			setNotification(
-				`Comment '${text}' added! Thank you!`,
-				'SUCCESS'
-			)
-		}
+			setNotification(`Comment '${text}' added! Thank you!`, 'SUCCESS')
+		},
 	})
 
 	const addLike = async (blogObject) => {
@@ -53,45 +52,66 @@ const BlogPage = () => {
 		const text = commentInput.current.value
 		const comment = {
 			text: text,
-			blogId: params.id
+			blogId: params.id,
 		}
 		addCommentMutation.mutate(comment)
-
 	}
-
-
 
 	if (isLoading) {
 		return <div>Loading Blog...</div>
 	}
 	if (isSuccess) {
 		const blog = data.find((blog) => blog.id === params.id)
-		// console.log(blog)
+
 		return (
 			<>
-				<h2>{blog.title} </h2>
+				<h2 className='text-2xl font-bold font-serif'>{blog.title} </h2>
 				<p>
-					<a href={blog.url}>{blog.url}</a>
+					<a
+						className='p-1 hover:bg-cyan-200 hover:text-cyan-700'
+						href={blog.url}
+					>
+						{blog.url}
+					</a>
 				</p>
 
-				<p className='likes'>
-					likes {blog.likes}{' '}
-					<button id='likeBtn' onClick={() => addLike(blog)}>
+				<p className='likes p-1'>
+					Likes: <strong>{blog.likes}</strong>
+					<button
+						id='likeBtn'
+						className='w-36 btn bg-gray-300 btn-sm ml-2'
+						onClick={() => addLike(blog)}
+					>
 						like
 					</button>
 				</p>
-				<p>added by {blog.user.username}</p>
+
+				<p className='p-1'>
+					Added by{' '}
+					<Link  to={`/users/${blog.user.id}`}>
+						<strong className='p-1 hover:bg-cyan-200 hover:text-cyan-700' >{blog.user.username}</strong>
+					</Link>
+				</p>
+
 				{/* <Comments /> */}
-				<h2>Comments</h2>
-				<form onSubmit={addComment}>
-					<input type='text' ref={commentInput} />
-					<button type='submit'>add comment</button>
-				</form>
-				<ul>
+				<div className='divider'></div>
+				<h2 className='text-2xl font-bold font-serif mt-2'>Comments</h2>
+
+				<ul className='list-disc italic pl-5'>
 					{blog.comments.map((comment) => (
 						<li key={comment.id}>{comment.text}</li>
 					))}
 				</ul>
+				<div className='divider'>Add your comment!</div>
+				<form onSubmit={addComment} className='flex flex-col'>
+					<textarea
+						className='bg-gray-200 text-black mb-2 rounded-md w-80'
+						type='text'
+						ref={commentInput}
+						rows={5}
+					/>
+					<button className='w-36 btn bg-gray-300 btn-sm' type='submit'>add comment</button>
+				</form>
 			</>
 		)
 	}

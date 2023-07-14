@@ -40,19 +40,7 @@ const App = () => {
 	// const result = useQuery(['blogs'], blogService.getAll)
 	// const blogs = result.data
 
-	const newBlogMutation = useMutation(blogService.create, {
-		onSuccess: (res) => {
-			const blogObject = res.data
-			queryClient.invalidateQueries('blogs')
-			setNotification(
-				`a new blog ${blogObject.title}! By ${blogObject.author} added!`,
-				'SUCCESS'
-			)
-		},
-		onError: (error) => {
-			setNotification(error.response.data.error, 'ERROR')
-		},
-	})
+
 
 	// LOGIN
 
@@ -94,6 +82,20 @@ const App = () => {
 		logoutUser()
 		// setUser(userState)
 	}
+
+	const newBlogMutation = useMutation(blogService.create, {
+		onSuccess: (res) => {
+			const blogObject = res.data
+			queryClient.invalidateQueries('blogs')
+			setNotification(
+				`a new blog ${blogObject.title}! By ${blogObject.author} added!`,
+				'SUCCESS'
+			)
+		},
+		onError: (error) => {
+			setNotification(error.response.data.error, 'ERROR')
+		},
+	})
 
 	const addBlog = async (blogObject) => {
 		blogFormRef.current.toggleVisibility()

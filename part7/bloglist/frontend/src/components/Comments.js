@@ -23,10 +23,10 @@ const Comments = () => {
 			<>
 				<h2>Comments</h2>
 				<ul>
-          {data.map((comment) => (
-            <li key={comment.id}>{comment.text}</li>
-          ))}
-        </ul>
+					{data.map((comment) => (
+						<li key={comment.id}>{comment.text}</li>
+					))}
+				</ul>
 			</>
 		)
 	}

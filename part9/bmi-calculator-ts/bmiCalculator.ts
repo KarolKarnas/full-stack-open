@@ -20,23 +20,25 @@ const parseArguments = (args: string[]): BmiValues => {
 const calculateBmi = (height: number, weight: number): string => {
 	const heightMeter: number = height / 100;
 	const bmi: number = weight / Math.pow(heightMeter, 2);
+	let bmiMsg:string = ''
 	if (bmi < 16) {
-		return `Severe Thinness`;
+		bmiMsg = `Severe Thinness`;
 	} else if (bmi >= 16 && bmi < 17) {
-		return `Moderate Thinness`;
+		bmiMsg = `Moderate Thinness`;
 	} else if (bmi >= 17 && bmi < 18.5) {
-		return `Mild Thinness`;
+		bmiMsg = `Mild Thinness`;
 	} else if (bmi >= 18.5 && bmi < 25) {
-		return `Normal (healthy weight)`;
+		bmiMsg = `Normal (healthy weight)`;
 	} else if (bmi >= 25 && bmi < 30) {
-		return `Overweight`;
+		bmiMsg = `Overweight`;
 	} else if (bmi >= 30 && bmi < 35) {
-		return `Obese Class I`;
+		bmiMsg = `Obese Class I`;
 	} else if (bmi >= 35 && bmi < 40) {
-		return `Obese Class II`;
+		bmiMsg = `Obese Class II`;
 	} else if (bmi >= 40) {
-		return `Obese Class III`;
+		bmiMsg = `Obese Class III`;
 	}
+	return bmiMsg
 };
 
 try {

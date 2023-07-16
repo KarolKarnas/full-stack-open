@@ -1,3 +1,25 @@
+interface ExerciseValues {
+	dailyExerciseHours: number[];
+	targetAmount: number;
+}
+
+const parseArgumentsExe = (args: string[]): ExerciseValues => {
+	if (args.length < 4) throw new Error('Not enough arguments');
+
+	const argsCustomArr = args.splice(2)
+	const argsNum = argsCustomArr.map((arg) => Number(arg));
+
+	argsNum.forEach((arg) => {
+		if (isNaN(arg)) {
+			throw new Error('Provided args were not numbers!');
+		}
+	});
+	return {
+		targetAmount: argsNum[0],
+		dailyExerciseHours: argsNum.slice(1),
+	};
+};
+
 interface Result {
 	periodLength: number;
 	trainingDays: number;
@@ -27,7 +49,6 @@ const calculateExercises = (
 
 	const rating: number =
 		average >= targetAmount ? 3 : targetAmount - average <= 1 ? 2 : 1;
-	// const test = Number(rating)
 	const ratingDescription: string = ratingDescriptionOptions[rating];
 
 	return {
@@ -41,4 +62,14 @@ const calculateExercises = (
 	};
 };
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+try {
+	const {targetAmount, dailyExerciseHours} = parseArgumentsExe(process.argv)
+	const exercisesMsg = calculateExercises(dailyExerciseHours, targetAmount)
+	console.log(exercisesMsg)
+} catch (error: unknown) {
+	let errorMessage = 'Something bad happened.';
+	if (error instanceof Error) {
+		errorMessage += ' Error: ' + error.message;
+	}
+	console.log(errorMessage);
+}

@@ -1,9 +1,9 @@
-interface BmiValues {
+export interface BmiValues {
 	height: number;
 	weight: number;
 }
 
-const parseArguments = (args: string[]): BmiValues => {
+export const parseArguments = (args: string[]): BmiValues => {
 	if (args.length < 4) throw new Error('Not enough arguments');
 	if (args.length > 4) throw new Error('Too many arguments');
 
@@ -17,7 +17,7 @@ const parseArguments = (args: string[]): BmiValues => {
 	}
 };
 
-const calculateBmi = (height: number, weight: number): string => {
+export const calculateBmi = (height: number, weight: number): string => {
 	const heightMeter: number = height / 100;
 	const bmi: number = weight / Math.pow(heightMeter, 2);
 	let bmiMsg:string = ''

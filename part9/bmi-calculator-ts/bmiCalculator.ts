@@ -20,7 +20,7 @@ export const parseArguments = (args: string[]): BmiValues => {
 export const calculateBmi = (height: number, weight: number): string => {
 	const heightMeter: number = height / 100;
 	const bmi: number = weight / Math.pow(heightMeter, 2);
-	let bmiMsg:string = ''
+	let bmiMsg: string = '';
 	if (bmi < 16) {
 		bmiMsg = `Severe Thinness`;
 	} else if (bmi >= 16 && bmi < 17) {
@@ -38,12 +38,12 @@ export const calculateBmi = (height: number, weight: number): string => {
 	} else if (bmi >= 40) {
 		bmiMsg = `Obese Class III`;
 	}
-	return bmiMsg
+	return bmiMsg;
 };
 
 try {
 	const { height, weight } = parseArguments(process.argv);
-	const bmiMessage = calculateBmi(height, weight)
+	const bmiMessage = calculateBmi(height, weight);
 	console.log(bmiMessage);
 } catch (error: unknown) {
 	let errorMessage = 'Something bad happened.';

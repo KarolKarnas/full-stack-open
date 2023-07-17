@@ -3,10 +3,10 @@ interface ExerciseValues {
 	targetAmount: number;
 }
 
-const parseArgumentsExe = (args: string[]): ExerciseValues => {
+export const parseArgumentsExe = (args: string[]): ExerciseValues => {
 	if (args.length < 4) throw new Error('Not enough arguments');
 
-	const argsCustomArr = args.splice(2)
+	const argsCustomArr = args.splice(2);
 	const argsNum = argsCustomArr.map((arg) => Number(arg));
 
 	argsNum.forEach((arg) => {
@@ -30,12 +30,12 @@ interface Result {
 	average: number;
 }
 
-const calculateExercises = (
+export const calculateExercises = (
 	dailyExerciseHours: number[],
 	targetAmount: number
 ): Result => {
 	const ratingDescriptionOptions: { [key: number]: string } = {
-		1: `waste off time`,
+		1: `bad`,
 		2: `not too bad but could be better`,
 		3: `great, keep it up`,
 	};
@@ -63,9 +63,9 @@ const calculateExercises = (
 };
 
 try {
-	const {targetAmount, dailyExerciseHours} = parseArgumentsExe(process.argv)
-	const exercisesMsg = calculateExercises(dailyExerciseHours, targetAmount)
-	console.log(exercisesMsg)
+	const { targetAmount, dailyExerciseHours } = parseArgumentsExe(process.argv);
+	const exercisesMsg = calculateExercises(dailyExerciseHours, targetAmount);
+	console.log(exercisesMsg);
 } catch (error: unknown) {
 	let errorMessage = 'Something bad happened.';
 	if (error instanceof Error) {

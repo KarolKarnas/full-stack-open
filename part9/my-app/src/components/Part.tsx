@@ -1,29 +1,4 @@
-import { CoursePart } from "../types";
-
-// interface CoursePartBase {
-// 	name: string;
-// 	exerciseCount: number;
-// }
-
-// interface CoursePartBaseDescription extends CoursePartBase {
-// 	description: string;
-// }
-
-// interface CoursePartBasic extends CoursePartBaseDescription {
-// 	kind: 'basic';
-// }
-
-// interface CoursePartGroup extends CoursePartBase {
-// 	groupProjectCount: number;
-// 	kind: 'group';
-// }
-
-// interface CoursePartBackground extends CoursePartBaseDescription {
-// 	backgroundMaterial: string;
-// 	kind: 'background';
-// }
-
-// type CoursePart = CoursePartBasic | CoursePartGroup | CoursePartBackground;
+import { CoursePart } from '../types';
 
 interface ContentProps {
 	courseParts: CoursePart[];
@@ -34,7 +9,6 @@ const assertNever = (value: never): never => {
 		`Unhandled discriminated union member: ${JSON.stringify(value)}`
 	);
 };
-
 
 const Part = (props: ContentProps) => {
 	return (
@@ -69,6 +43,25 @@ const Part = (props: ContentProps) => {
 								<em>{part.description}</em>
 								<br />
 								{part.backgroundMaterial}
+							</div>
+						);
+					case 'special':
+						return (
+							<div className='part' key={part.name}>
+								<strong>
+									{part.name} {part.exerciseCount}
+								</strong>{' '}
+								<br />
+								<em>{part.description}</em>
+								<br />
+								required skills:{' '}
+								{part.requirements.map((requirement, index, arr) => (
+									<span key={index}>
+										{index === arr.length - 1
+											? requirement
+											: `${requirement}, `}
+									</span>
+								))}
 							</div>
 						);
 					default:

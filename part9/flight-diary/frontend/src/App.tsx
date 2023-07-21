@@ -10,11 +10,13 @@ const App = () => {
 		visibility: 'ok',
 		comment: '',
 	});
-	const [error, setError] = useState<string>('')
+	const [error, setError] = useState<string>('');
 
 	useEffect(() => {
 		getAllDiaries().then((data) => {
-			if (data) {setDiaries(data)}
+			if (data) {
+				setDiaries(data);
+			}
 		});
 	}, []);
 
@@ -25,23 +27,25 @@ const App = () => {
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		createDiary(newDiary).then(data=> {
-			setDiaries([...diaries, data])
-		}).catch((error) => {
-			setError(error.response.data)
-    });
+		createDiary(newDiary)
+			.then((data) => {
+				setDiaries([...diaries, data]);
+			})
+			.catch((error) => {
+				setError(error.response.data);
+			});
 	};
 
 	return (
 		<div>
 			<h1>Add new entry</h1>
-			<h2 style={{color: "red"}}>{error}</h2>
+			<h2 style={{ color: 'red' }}>{error}</h2>
 
 			<form onSubmit={handleSubmit}>
 				<label htmlFor='date'>
 					Date:{' '}
 					<input
-						type='text'
+						type='date'
 						id='date'
 						name='date'
 						value={newDiary?.date}
@@ -49,7 +53,7 @@ const App = () => {
 					/>
 				</label>
 				<br />
-				<label htmlFor='visibility'>
+				{/* <label htmlFor='visibility'>
 					Visibility:{' '}
 					<input
 						type='text'
@@ -58,9 +62,42 @@ const App = () => {
 						value={newDiary?.visibility}
 						onChange={handleChange}
 					/>
-				</label>
+				</label> */}
+
+					visibility:
+					<label htmlFor='visibility'>
+						<input
+							type='radio'
+							name='visibility'
+							value={'great'}
+							onChange={handleChange}
+						/>
+						great
+						<input
+							type='radio'
+							name='visibility'
+							value={'good'}
+							onChange={handleChange}
+						/>
+						good
+						<input
+							type='radio'
+							name='visibility'
+							value={'ok'}
+							onChange={handleChange}
+						/>
+						ok
+						<input
+							type='radio'
+							name='visibility'
+							value={'poor'}
+							onChange={handleChange}
+						/>
+						poor
+					</label>
+
 				<br />
-				<label htmlFor='weather'>
+				{/* <label htmlFor='weather'>
 					Weather:{' '}
 					<input
 						type='text'
@@ -69,7 +106,47 @@ const App = () => {
 						value={newDiary?.weather}
 						onChange={handleChange}
 					/>
-				</label>
+				</label> */}
+					weather:
+					<label htmlFor='weather'>
+						<input
+							type='radio'
+							name='weather'
+							value={'sunny'}
+							onChange={handleChange}
+						/>
+						sunny
+						<input
+							type='radio'
+							name='weather'
+							value={'rainy'}
+							onChange={handleChange}
+						/>
+						rainy
+						<input
+							type='radio'
+							name='weather'
+							value={'cloudy'}
+							onChange={handleChange}
+						/>
+						cloudy
+						<input
+							type='radio'
+							name='weather'
+							value={'windy'}
+							onChange={handleChange}
+						/>
+						windy
+						<input
+							type='radio'
+							name='weather'
+							value={'stormy'}
+							onChange={handleChange}
+						/>
+						stormy
+					</label>
+		
+
 				<br />
 
 				<label htmlFor='comment'>

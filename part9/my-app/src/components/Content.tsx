@@ -1,7 +1,5 @@
-import Part from "./Part";
-import { CoursePart } from "../types";
-
-
+import Part from './Part';
+import { CoursePart } from '../types';
 
 interface ContentProps {
 	courseParts: CoursePart[];

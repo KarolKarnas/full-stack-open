@@ -10,29 +10,32 @@ const App = () => {
 		visibility: 'ok',
 		comment: '',
 	});
+	const [error, setError] = useState<string>('')
 
 	useEffect(() => {
 		getAllDiaries().then((data) => {
-			setDiaries(data);
+			if (data) {setDiaries(data)}
 		});
 	}, []);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setNewDiary({ ...newDiary, [name]: value });
-		// console.log(newDiary);
 	};
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		createDiary(newDiary).then(data=> {
 			setDiaries([...diaries, data])
-		})
+		}).catch((error) => {
+			setError(error.response.data)
+    });
 	};
 
 	return (
 		<div>
 			<h1>Add new entry</h1>
+			<h2 style={{color: "red"}}>{error}</h2>
 
 			<form onSubmit={handleSubmit}>
 				<label htmlFor='date'>

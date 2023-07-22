@@ -2,6 +2,15 @@ import { getAllDiaries, createDiary } from './diaryService';
 import { useEffect, useState } from 'react';
 import { DiaryEntry, NewDiaryEntry } from './types';
 
+// interface VisibilityOption {
+// 	value: Visibility;
+// 	label: string;
+// }
+
+// const visibilityOptions: VisibilityOption[] = Object.values(Visibility).map(v => ({
+//   value: v, label: v.toString()
+// }));
+
 const App = () => {
 	const [diaries, setDiaries] = useState<DiaryEntry[]>([]);
 	const [newDiary, setNewDiary] = useState<NewDiaryEntry>({
@@ -63,39 +72,37 @@ const App = () => {
 						onChange={handleChange}
 					/>
 				</label> */}
-
-					visibility:
-					<label htmlFor='visibility'>
-						<input
-							type='radio'
-							name='visibility'
-							value={'great'}
-							onChange={handleChange}
-						/>
-						great
-						<input
-							type='radio'
-							name='visibility'
-							value={'good'}
-							onChange={handleChange}
-						/>
-						good
-						<input
-							type='radio'
-							name='visibility'
-							value={'ok'}
-							onChange={handleChange}
-						/>
-						ok
-						<input
-							type='radio'
-							name='visibility'
-							value={'poor'}
-							onChange={handleChange}
-						/>
-						poor
-					</label>
-
+				visibility:
+				<label htmlFor='visibility'>
+					<input
+						type='radio'
+						name='visibility'
+						value={'great'}
+						onChange={handleChange}
+					/>
+					great
+					<input
+						type='radio'
+						name='visibility'
+						value={'good'}
+						onChange={handleChange}
+					/>
+					good
+					<input
+						type='radio'
+						name='visibility'
+						value={'ok'}
+						onChange={handleChange}
+					/>
+					ok
+					<input
+						type='radio'
+						name='visibility'
+						value={'poor'}
+						onChange={handleChange}
+					/>
+					poor
+				</label>
 				<br />
 				{/* <label htmlFor='weather'>
 					Weather:{' '}
@@ -107,48 +114,45 @@ const App = () => {
 						onChange={handleChange}
 					/>
 				</label> */}
-					weather:
-					<label htmlFor='weather'>
-						<input
-							type='radio'
-							name='weather'
-							value={'sunny'}
-							onChange={handleChange}
-						/>
-						sunny
-						<input
-							type='radio'
-							name='weather'
-							value={'rainy'}
-							onChange={handleChange}
-						/>
-						rainy
-						<input
-							type='radio'
-							name='weather'
-							value={'cloudy'}
-							onChange={handleChange}
-						/>
-						cloudy
-						<input
-							type='radio'
-							name='weather'
-							value={'windy'}
-							onChange={handleChange}
-						/>
-						windy
-						<input
-							type='radio'
-							name='weather'
-							value={'stormy'}
-							onChange={handleChange}
-						/>
-						stormy
-					</label>
-		
-
+				weather:
+				<label htmlFor='weather'>
+					<input
+						type='radio'
+						name='weather'
+						value={'sunny'}
+						onChange={handleChange}
+					/>
+					sunny
+					<input
+						type='radio'
+						name='weather'
+						value={'rainy'}
+						onChange={handleChange}
+					/>
+					rainy
+					<input
+						type='radio'
+						name='weather'
+						value={'cloudy'}
+						onChange={handleChange}
+					/>
+					cloudy
+					<input
+						type='radio'
+						name='weather'
+						value={'windy'}
+						onChange={handleChange}
+					/>
+					windy
+					<input
+						type='radio'
+						name='weather'
+						value={'stormy'}
+						onChange={handleChange}
+					/>
+					stormy
+				</label>
 				<br />
-
 				<label htmlFor='comment'>
 					Comment:{' '}
 					<input

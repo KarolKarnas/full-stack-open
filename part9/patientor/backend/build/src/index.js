@@ -4,19 +4,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const diagnosesRoute_1 = __importDefault(require("./routes/diagnosesRoute"));
+const patientsRoute_1 = __importDefault(require("./routes/patientsRoute"));
 const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
 const PORT = 3001;
-const allowedOrigins = [`http://localhost:${PORT}`];
-const options = {
-    origin: allowedOrigins
-};
-app.use((0, cors_1.default)(options));
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+app.use('/api/diagnoses', diagnosesRoute_1.default);
+app.use('/api/patients', patientsRoute_1.default);
 app.get('/api/ping', (_req, res) => {
     console.log('someone pinged here');
     res.send('pong');
 });
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`RUNNING http://localhost:${PORT}/api/ping`);
 });

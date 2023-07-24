@@ -4,7 +4,7 @@ export enum Gender {
 	Other = 'other',
 }
 
-export interface Diagnose {
+export interface Diagnosis {
 	code: string;
 	name: string;
 	latin?: string;
@@ -27,7 +27,7 @@ interface BaseEntry {
 	date: string;
 	specialist: string;
 	// diagnosisCodes?: Diagnosis['code'][];
-	diagnosisCodes?: Array<Diagnose['code']>;
+	diagnosisCodes?: Array<Diagnosis['code']>;
 }
 
 interface HealthCheckEntry extends BaseEntry {

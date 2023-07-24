@@ -37,6 +37,29 @@ const SinglePatient = () => {
 					<span>ssh: {patient.ssn}</span>
 					<br />
 					<span>occupation: {patient.occupation}</span>
+					{patient.entries && (
+						<>
+							<h3>Entries</h3>
+
+							{patient.entries.map((entry) => {
+								return (
+									<div key={entry.id}>
+										<p>
+											{entry.date} {entry.description}
+										</p>
+										{entry.diagnosisCodes && (
+											<ul>
+												{' '}
+												{entry.diagnosisCodes.map((dc) => (
+													<li key={dc}>{dc}</li>
+												))}
+											</ul>
+										)}
+									</div>
+								);
+							})}
+						</>
+					)}
 				</>
 			)}
 		</div>

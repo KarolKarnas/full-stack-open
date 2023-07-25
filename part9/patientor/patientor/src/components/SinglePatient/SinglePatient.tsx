@@ -2,9 +2,12 @@ import { useState, useEffect } from 'react';
 import { Patient, Diagnosis } from '../../types';
 import { useParams } from 'react-router-dom';
 import patientService from '../../services/patients';
+
 import FemaleIcon from '@mui/icons-material/Female';
 import MaleIcon from '@mui/icons-material/Male';
 import TransgenderIcon from '@mui/icons-material/Transgender';
+
+import EntryComp from './EntryComp';
 
 interface Props {
 	diagnoses : Diagnosis[]
@@ -47,7 +50,9 @@ const SinglePatient = ({diagnoses}: Props) => {
 						<>
 							<h3>Entries</h3>
 
-							{patient.entries.map((entry) => {
+
+<EntryComp entries={patient.entries} diagnoses={diagnoses}></EntryComp>
+							{/* {patient.entries.map((entry) => {
 								return (
 									<div key={entry.id}>
 										<p>
@@ -66,7 +71,7 @@ const SinglePatient = ({diagnoses}: Props) => {
 										)}
 									</div>
 								);
-							})}
+							})} */}
 						</>
 					)}
 				</>

@@ -10,10 +10,10 @@ import TransgenderIcon from '@mui/icons-material/Transgender';
 import EntryComp from './EntryComp';
 
 interface Props {
-	diagnoses : Diagnosis[]
+	diagnoses: Diagnosis[];
 }
 
-const SinglePatient = ({diagnoses}: Props) => {
+const SinglePatient = ({ diagnoses }: Props) => {
 	const { id } = useParams();
 	const [patient, setPatient] = useState<Patient>();
 	// const [diagnosis, setDiagnosis] = useState<Diagnosis[]>();
@@ -29,8 +29,6 @@ const SinglePatient = ({diagnoses}: Props) => {
 
 		fetchPatient();
 	}, [id]);
-
-
 
 	return (
 		<div>
@@ -50,28 +48,10 @@ const SinglePatient = ({diagnoses}: Props) => {
 						<>
 							<h3>Entries</h3>
 
-
-<EntryComp entries={patient.entries} diagnoses={diagnoses}></EntryComp>
-							{/* {patient.entries.map((entry) => {
-								return (
-									<div key={entry.id}>
-										<p>
-											{entry.date} {entry.description}
-										</p>
-										{entry.diagnosisCodes && (
-											<ul>
-												{' '}
-												{entry.diagnosisCodes.map((dc) => {
-									const diagnosis = diagnoses.find(diagnosis => dc === diagnosis.code)
-													return (
-														<li key={dc}>{dc} - {diagnosis?.name}</li>
-													);
-												})}
-											</ul>
-										)}
-									</div>
-								);
-							})} */}
+							<EntryComp
+								entries={patient.entries}
+								diagnoses={diagnoses}
+							></EntryComp>
 						</>
 					)}
 				</>

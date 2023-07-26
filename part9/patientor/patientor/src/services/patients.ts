@@ -1,46 +1,53 @@
-import axios from "axios";
-import { Patient, PatientFormValues, Entry, NewHealthCheckEntry } from "../types";
+import axios from 'axios';
+import {
+	Patient,
+	PatientFormValues,
+	Entry,
+	NewEntry,
+	// NewHealthCheckEntry,
+} from '../types';
 
-import { apiBaseUrl } from "../constants";
+import { apiBaseUrl } from '../constants';
 
 const getAll = async () => {
-  const { data } = await axios.get<Patient[]>(
-    `${apiBaseUrl}/patients`
-  );
+	const { data } = await axios.get<Patient[]>(`${apiBaseUrl}/patients`);
 
-  return data;
+	return data;
 };
 
-const getPatient = async(id: string) => {
-  const { data } = await axios.get<Patient>(
-    `${apiBaseUrl}/patients/${id}`
-  );
+const getPatient = async (id: string) => {
+	const { data } = await axios.get<Patient>(`${apiBaseUrl}/patients/${id}`);
 
-  return data;
+	return data;
 };
 
 const create = async (object: PatientFormValues) => {
-  const { data } = await axios.post<Patient>(
-    `${apiBaseUrl}/patients`,
-    object
-  );
+	const patientWithEntries: PatientFormValues = {
+    ...object,
+    entries: []
+  };
 
-  return data;
+	// console.log(object)
+	const { data } = await axios.post<Patient>(`${apiBaseUrl}/patients`, patientWithEntries);
+
+	return data;
 };
 
-const createEntry = async (id: string, object : NewHealthCheckEntry) => {
-  const { data } = await axios.post<Entry>(
-    `${apiBaseUrl}/patients/${id}/entries`,
-    object
-  );
+const createEntry = async (id: string, object: NewEntry) => {
+	const { data } = await axios.post<Entry>(
+		`${apiBaseUrl}/patients/${id}/entries`,
+		object
+	);
 
-  // console.log(data)
+	// console.log(data)
 
-  return data;
-}
+	return data;
+};
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
-  getAll, create, getPatient, createEntry
+	getAll,
+	create,
+	getPatient,
+	createEntry,
 };
-

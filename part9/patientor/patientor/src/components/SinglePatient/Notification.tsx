@@ -9,6 +9,7 @@ const Notification = ({ notification, setNotification }: Props) => {
 	if (notification === null) {
 		return null;
 	} else {
+    setInterval(() => { setNotification(null) }, 3000)
 		return  <Alert severity="error">{notification}</Alert>
 	}
 };

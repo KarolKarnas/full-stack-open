@@ -145,6 +145,8 @@ const parseSpecialist = (specialist: unknown): string => {
 };
 
 const isHealthCheckRating = (param: number): param is HealthCheckRating => {
+
+	
 	return Object.values(HealthCheckRating)
 		.map((v) => Number(v))
 		.includes(param);
@@ -155,6 +157,7 @@ const parseHealthCheckRating = (
 ): HealthCheckRating => {
 	if (
 		!healthCheckRating ||
+		// !healthCheckRating && healthCheckRating !== 0 ||
 		!isNumber(healthCheckRating) ||
 		!isHealthCheckRating(healthCheckRating)
 	) {

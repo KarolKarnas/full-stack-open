@@ -23,6 +23,8 @@ const HealthCheckComp = ({ entry }: EntryProps) => {
 					<FavoriteIcon style={{ color: 'black' }} />
 				) : null}
         <br />
+				{entry.diagnosisCodes ? <span>diagnose codes</span> : null}
+				<br />
         <span>diagnose by {entry.specialist}</span>
 			</p>
 		</div>

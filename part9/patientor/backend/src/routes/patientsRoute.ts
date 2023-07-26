@@ -22,6 +22,7 @@ patientsRouter.post('/:id/entries', (req, res) => {
 	try {
 		const newEntry = toNewEntry(req.body);
 		const addedEntry = patientService.addEntry(req.params.id, newEntry);
+		// console.log(addedEntry);
 		res.json(addedEntry);
 	} catch (error: unknown) {
 		let errorMessage = 'Something went wrong.';

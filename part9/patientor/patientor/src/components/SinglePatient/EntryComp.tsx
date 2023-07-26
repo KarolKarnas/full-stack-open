@@ -16,8 +16,8 @@ const assertNever = (value: never): never => {
 };
 
 const EntryComp = ({ entries, diagnoses }: EntryProps) => {
-	console.log(entries);
-	console.log(diagnoses);
+	// console.log(entries);
+	// console.log(diagnoses);
 	return (
 		<>
 			{entries.map((entry) => {

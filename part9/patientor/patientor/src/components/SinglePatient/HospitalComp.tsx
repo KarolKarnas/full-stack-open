@@ -16,6 +16,8 @@ const HospitalComp = ({ entry }: EntryProps) => {
 				<br />
         <span><strong>{entry.discharge.criteria}</strong> - {entry.discharge.date} - discharge date<LiquorIcon /></span>
         <br />
+				{/* {entry.diagnosisCodes ? <span>diagnose</span> : null}
+				<br /> */}
 				<span>diagnose by {entry.specialist}</span>
 			</p>
 		</div>

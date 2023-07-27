@@ -11,7 +11,7 @@ import EntryComp from './EntryComp';
 import Notification from './Notification';
 
 import HealthCheckForm from './EntryForms/HealthCheckForm';
-import HospitalForm from './EntryForms/Hospital';
+import HospitalForm from './EntryForms/HospitalForm';
 
 import OccupationalHealthcareForm from './EntryForms/OccupationalHealthcareForm';
 

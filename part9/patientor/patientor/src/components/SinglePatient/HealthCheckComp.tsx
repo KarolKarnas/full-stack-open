@@ -1,12 +1,13 @@
-import { HealthCheckEntry } from '../../types';
+import { Diagnosis, HealthCheckEntry } from '../../types';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 
 interface EntryProps {
 	entry: HealthCheckEntry;
+	diagnoses: Diagnosis[];
 }
 
-const HealthCheckComp = ({ entry }: EntryProps) => {
+const HealthCheckComp = ({ entry, diagnoses }: EntryProps) => {
 	return (
 		<div className='entry'>
 			<p>
@@ -24,6 +25,18 @@ const HealthCheckComp = ({ entry }: EntryProps) => {
 				) : null}
         <br />
 				{entry.diagnosisCodes ? <span>diagnose codes</span> : null}
+				<br />
+				{entry.diagnosisCodes && (
+											<ul>
+												{' '}
+												{entry.diagnosisCodes.map((dc) => {
+									const diagnosis = diagnoses.find(diagnosis => dc === diagnosis.code)
+													return (
+														<li key={dc}>{dc} - {diagnosis?.name}</li>
+													);
+												})}
+											</ul>
+										)}
 				<br />
         <span>diagnose by {entry.specialist}</span>
 			</p>

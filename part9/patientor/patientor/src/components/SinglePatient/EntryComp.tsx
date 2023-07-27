@@ -23,11 +23,11 @@ const EntryComp = ({ entries, diagnoses }: EntryProps) => {
 			{entries.map((entry) => {
 				switch (entry.type) {
 					case 'HealthCheck':
-						return <HealthCheckComp key={entry.id} entry={entry} />;
+						return <HealthCheckComp diagnoses={diagnoses} key={entry.id} entry={entry} />;
 					case 'Hospital':
-						return <HospitalComp key={entry.id} entry={entry}/>
+						return <HospitalComp diagnoses={diagnoses} key={entry.id} entry={entry}/>
 					case 'OccupationalHealthcare':
-						return <OccupationalHealthcareComp key={entry.id} entry={entry}/>
+						return <OccupationalHealthcareComp diagnoses={diagnoses} key={entry.id} entry={entry}/>
 					default:
 						return assertNever(entry);
 				}

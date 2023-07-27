@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import {
-	Patient,
-	Diagnosis,
-	HealthCheckEntry,
-	NewEntry,
-} from '../../../types';
+import { Patient, Diagnosis, HealthCheckEntry, NewEntry } from '../../../types';
 import patientService from '../../../services/patients';
 
-import { TextField, Button, Box } from '@mui/material';
+import {
+	TextField,
+	Button,
+	Box,
+	RadioGroup,
+	FormControlLabel,
+	Radio,
+	FormLabel,
+} from '@mui/material';
 import { parseHealthCheckRating } from '../../../utils';
 
 import axios from 'axios';
@@ -28,16 +31,30 @@ const HealthCheckForm = ({ id, setPatient, setNotification }: Props) => {
 		useState<HealthCheckEntry['healthCheckRating']>(0);
 	const [diagnosisCodes, setDiagnosisCodes] = useState<string>('');
 
-	const checkHealthCheckRating = (e: React.SyntheticEvent) => {
+	// const checkHealthCheckRating = (e: React.SyntheticEvent) => {
+	// 	try {
+	// 		const inputElement = e.target as HTMLInputElement;
+	// 		const value = inputElement.value;
+	// 		const result = parseHealthCheckRating(Number(value));
+	// 		console.log(result);
+	// 		setHealthCheckRating(result);
+	// 	} catch (error) {
+	// 		console.log(error);
+	// 		// setHealthCheckRating(0);
+	// 	}
+	// };
+
+	const handleChangeHealthRating = (e: React.ChangeEvent<HTMLInputElement>) => {
+		console.log();
 		try {
-			const inputElement = e.target as HTMLInputElement;
-			const value = inputElement.value;
-			const result = parseHealthCheckRating(Number(value));
-			console.log(result);
+	
+			const value = Number(e.target.value)
+			console.log(value)
+			const result = parseHealthCheckRating(value);
 			setHealthCheckRating(result);
 		} catch (error) {
 			console.log(error);
-			// setHealthCheckRating(0);
+
 		}
 	};
 
@@ -127,7 +144,39 @@ const HealthCheckForm = ({ id, setPatient, setNotification }: Props) => {
 					// required
 					sx={{ mb: 1 }}
 				/>
-				<TextField
+				<FormLabel id='HealthCheckRatingLabel'>HealthCheckRating</FormLabel>
+				<RadioGroup
+					defaultValue='0'
+					name='HealthCheckRating'
+					row
+					// sx={{
+					// 	display: 'flex',
+					// 	flexDirection: 'row',
+					// 	justifyContent: 'center',
+					// }}
+				>
+					<FormControlLabel
+						value='0'
+						control={<Radio onChange={handleChangeHealthRating} />}
+						label='0'
+					/>
+					<FormControlLabel
+						value='1'
+						control={<Radio onChange={handleChangeHealthRating} />}
+						label='1'
+					/>
+					<FormControlLabel
+						value='2'
+						control={<Radio onChange={handleChangeHealthRating} />}
+						label='2'
+					/>
+					<FormControlLabel
+						value='3'
+						control={<Radio onChange={handleChangeHealthRating} />}
+						label='3'
+					/>
+				</RadioGroup>
+				{/* <TextField
 					type='text'
 					variant='standard'
 					color='primary'
@@ -137,7 +186,7 @@ const HealthCheckForm = ({ id, setPatient, setNotification }: Props) => {
 					fullWidth
 					// required
 					sx={{ mb: 1 }}
-				/>
+				/> */}
 				<TextField
 					type='text'
 					variant='standard'

@@ -1,12 +1,8 @@
-import {
-	HealthCheckRating,
-  Diagnosis
-} from './types';
+import { HealthCheckRating, Diagnosis } from './types';
 
 const isNumber = (number: unknown): number is number => {
 	return typeof number === 'number' || number instanceof Number;
 };
-
 
 const isHealthCheckRating = (param: number): param is HealthCheckRating => {
 	return Object.values(HealthCheckRating)
@@ -18,7 +14,7 @@ export const parseHealthCheckRating = (
 	healthCheckRating: unknown
 ): HealthCheckRating => {
 	if (
-		!healthCheckRating ||
+		(!healthCheckRating && healthCheckRating !== 0) ||
 		!isNumber(healthCheckRating) ||
 		!isHealthCheckRating(healthCheckRating)
 	) {
@@ -27,11 +23,13 @@ export const parseHealthCheckRating = (
 	return healthCheckRating;
 };
 
-export const parseDiagnosisCodes = (object: unknown): Array<Diagnosis['code']> =>  {
-  if (!object || typeof object !== 'object' || !('diagnosisCodes' in object)) {
-    // we will just trust the data to be in correct form
-    return [] as Array<Diagnosis['code']>;
-  }
+export const parseDiagnosisCodes = (
+	object: unknown
+): Array<Diagnosis['code']> => {
+	if (!object || typeof object !== 'object' || !('diagnosisCodes' in object)) {
+		// we will just trust the data to be in correct form
+		return [] as Array<Diagnosis['code']>;
+	}
 
-  return object.diagnosisCodes as Array<Diagnosis['code']>;
+	return object.diagnosisCodes as Array<Diagnosis['code']>;
 };

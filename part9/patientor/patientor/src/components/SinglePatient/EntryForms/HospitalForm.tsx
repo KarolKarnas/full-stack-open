@@ -88,7 +88,7 @@ const HospitalForm = ({ id, setPatient, setNotification }: Props) => {
 					label='Description'
 					onChange={(e) => setDescription(e.target.value)}
 					value={description}
-					// fullWidth
+					fullWidth
 					required
 					sx={{ mb: 1 }}
 				/>

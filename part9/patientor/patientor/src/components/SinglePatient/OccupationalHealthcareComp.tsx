@@ -11,7 +11,7 @@ const OccupationalHealthcareComp = ({ entry, diagnoses }: EntryProps) => {
 	console.log(entry)
 	return (
 		<div className='entry'>
-			<p>
+			<div>
 				
 				{entry.date} <WorkIcon /> {entry.employerName}
 				<br /> <em>{entry.description}</em>
@@ -29,7 +29,7 @@ const OccupationalHealthcareComp = ({ entry, diagnoses }: EntryProps) => {
 										)}
 				<br />
 				<span>diagnose by {entry.specialist}</span>
-			</p>
+			</div>
 		</div>
 	);
 };

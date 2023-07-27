@@ -10,7 +10,7 @@ interface EntryProps {
 const HealthCheckComp = ({ entry, diagnoses }: EntryProps) => {
 	return (
 		<div className='entry'>
-			<p>
+			<div>
 				{entry.date} <MedicalServicesIcon />
 				<br /> <em>{entry.description}</em>
 				<br />{' '}
@@ -39,7 +39,7 @@ const HealthCheckComp = ({ entry, diagnoses }: EntryProps) => {
 										)}
 				<br />
         <span>diagnose by {entry.specialist}</span>
-			</p>
+			</div>
 		</div>
 	);
 };

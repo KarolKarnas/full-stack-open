@@ -11,7 +11,7 @@ interface EntryProps {
 const HospitalComp = ({ entry, diagnoses }: EntryProps) => {
 	return (
 		<div className='entry'>
-			<p>
+			<div>
 				{entry.date} <LocalHospitalIcon /> 
 				<br /> <em>{entry.description}</em>
 				<br />
@@ -30,7 +30,7 @@ const HospitalComp = ({ entry, diagnoses }: EntryProps) => {
 										)}
 				<br />
 				<span>diagnose by {entry.specialist}</span>
-			</p>
+			</div>
 		</div>
 	);
 };

@@ -55,6 +55,7 @@ const SinglePatient = ({ diagnoses }: Props) => {
 						setNotification={setNotification}
 					/>
 					<HealthCheckForm
+					diagnoses={diagnoses}
 						id={id}
 						setPatient={setPatient}
 						setNotification={setNotification}

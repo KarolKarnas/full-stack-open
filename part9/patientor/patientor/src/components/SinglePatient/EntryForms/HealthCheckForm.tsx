@@ -10,18 +10,52 @@ import {
 	FormControlLabel,
 	Radio,
 	FormLabel,
+	InputLabel,
+	Select,
+	OutlinedInput,
+	Theme,
+	MenuItem,
+	useTheme,
+	SelectChangeEvent,
 } from '@mui/material';
 import { parseHealthCheckRating } from '../../../utils';
 
 import axios from 'axios';
 
+function getStyles(diagnose: string, diagnosisCodes: string[], theme: Theme) {
+	return {
+		fontWeight:
+			diagnosisCodes.indexOf(diagnose) === -1
+				? theme.typography.fontWeightRegular
+				: theme.typography.fontWeightMedium,
+	};
+}
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+
+const MenuProps = {
+	PaperProps: {
+		style: {
+			maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+			width: 250,
+		},
+	},
+};
+
 interface Props {
 	id: string | undefined;
 	setPatient: React.Dispatch<React.SetStateAction<Patient | undefined>>;
 	setNotification: React.Dispatch<React.SetStateAction<string | null>>;
+	diagnoses: Diagnosis[];
 }
 
-const HealthCheckForm = ({ id, setPatient, setNotification }: Props) => {
+const HealthCheckForm = ({
+	id,
+	diagnoses,
+	setPatient,
+	setNotification,
+}: Props) => {
+	const theme = useTheme();
 	const [description, setDescription] =
 		useState<HealthCheckEntry['description']>('');
 	const [date, setDate] = useState<HealthCheckEntry['date']>('');
@@ -29,7 +63,7 @@ const HealthCheckForm = ({ id, setPatient, setNotification }: Props) => {
 		useState<HealthCheckEntry['specialist']>('');
 	const [healthCheckRating, setHealthCheckRating] =
 		useState<HealthCheckEntry['healthCheckRating']>(0);
-	const [diagnosisCodes, setDiagnosisCodes] = useState<string>('');
+	const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
 
 	// const checkHealthCheckRating = (e: React.SyntheticEvent) => {
 	// 	try {
@@ -44,34 +78,27 @@ const HealthCheckForm = ({ id, setPatient, setNotification }: Props) => {
 	// 	}
 	// };
 
+	// const diagnosesArr: string[] =[]
+	// diagnoses.forEach(diagnoses => diagnosesArr.push(diagnoses.code))
+	const diagnosesArr: string[] = diagnoses.map((diagnosis) => diagnosis.code);
+
 	const handleChangeHealthRating = (e: React.ChangeEvent<HTMLInputElement>) => {
 		console.log();
 		try {
-	
-			const value = Number(e.target.value)
-			console.log(value)
+			const value = Number(e.target.value);
+			console.log(value);
 			const result = parseHealthCheckRating(value);
 			setHealthCheckRating(result);
 		} catch (error) {
 			console.log(error);
-
 		}
 	};
 
 	const handleSubmit = async (e: React.SyntheticEvent) => {
-		const parseDiagnosisCodes = (
-			diagnosisCodes: string
-		): Array<Diagnosis['code']> => {
-			const delimiter = ', ';
-			const result = diagnosisCodes.split(delimiter);
-			return result;
-		};
-
-		const parsedDiagnosisCodes = parseDiagnosisCodes(diagnosisCodes);
-		e.preventDefault();
+		e.preventDefault()
 		// const newEntry: NewHealthCheckEntry = {
 		const newEntry: NewEntry = {
-			diagnosisCodes: parsedDiagnosisCodes,
+			diagnosisCodes,
 			date,
 			specialist,
 			type: 'HealthCheck',
@@ -104,6 +131,26 @@ const HealthCheckForm = ({ id, setPatient, setNotification }: Props) => {
 				setNotification('Unknown error');
 			}
 		}
+	};
+
+	const handleChangeDiagnosisCodes = (
+		e: SelectChangeEvent<typeof diagnosisCodes>
+	) => {
+		const {
+			target: { value },
+		} = e;
+
+		setDiagnosisCodes(typeof value === 'string' ? value.split(',') : value);
+		// const parseDiagnosisCodes = (
+		// 	diagnosisCodes: string
+		// ): Array<Diagnosis['code']> => {
+		// 	const delimiter = ', ';
+		// 	const result = diagnosisCodes.split(delimiter);
+		// 	return result;
+		// };
+
+		// const parsedDiagnosisCodes = parseDiagnosisCodes(diagnosisCodes);
+		// e.preventDefault();
 	};
 
 	return (
@@ -149,11 +196,6 @@ const HealthCheckForm = ({ id, setPatient, setNotification }: Props) => {
 					defaultValue='0'
 					name='HealthCheckRating'
 					row
-					// sx={{
-					// 	display: 'flex',
-					// 	flexDirection: 'row',
-					// 	justifyContent: 'center',
-					// }}
 				>
 					<FormControlLabel
 						value='0'
@@ -176,32 +218,30 @@ const HealthCheckForm = ({ id, setPatient, setNotification }: Props) => {
 						label='3'
 					/>
 				</RadioGroup>
-				{/* <TextField
-					type='text'
-					variant='standard'
-					color='primary'
-					label='HealthCheckRating'
-					onChange={checkHealthCheckRating}
-					value={healthCheckRating}
-					fullWidth
-					// required
-					sx={{ mb: 1 }}
-				/> */}
-				<TextField
-					type='text'
-					variant='standard'
-					color='primary'
-					label='DiagnosisCodes'
-					onChange={(e) => setDiagnosisCodes(e.target.value)}
+				<InputLabel id='demo-multiple-name-label'>Name</InputLabel>
+				<Select
+					labelId='demo-multiple-name-label'
+					id='demo-multiple-name'
+					multiple
 					value={diagnosisCodes}
+					onChange={handleChangeDiagnosisCodes}
+					input={<OutlinedInput label='Name' />}
 					fullWidth
-					// required
-					sx={{ mb: 1 }}
-				/>
+					MenuProps={MenuProps}
+				>
+					{diagnosesArr.map((diagnose) => (
+						<MenuItem
+							key={diagnose}
+							value={diagnose}
+							style={getStyles(diagnose, diagnosisCodes, theme)}
+						>
+							{diagnose}
+						</MenuItem>
+					))}
+				</Select>
 
 				<Box
 					m={1}
-					//margin
 					display='flex'
 					justifyContent='center'
 					alignItems='flex-end'

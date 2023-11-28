@@ -1,98 +1,37 @@
-require('dotenv').config()
-const { Sequelize, QueryTypes, DataTypes, Model } = require('sequelize')
-const express = require('express')
-const app = express()
-const sequelize = new Sequelize(process.env.DATABASE_URL)
+const express = require('express');
+const app = express();
 
-app.use(express.json())
-
-class Blog extends Model {}
-
-Blog.init(
-	{
-		id: {
-			type: DataTypes.INTEGER,
-			primaryKey: true,
-			autoIncrement: true,
-		},
-    author: {
-      type: DataTypes.TEXT
-    },
-		url: {
-			type: DataTypes.TEXT,
-			allowNull: false,
-		},
-		title: {
-			type: DataTypes.TEXT,
-			allowNull: false,
-		},
-		likes: {
-			type: DataTypes.INTEGER,
-      defaultValue: 0
-		}
-	},
-	{
-		sequelize,
-		underscored: true,
-		timestamps: false,
-		modelName: 'blog',
-	}
-);
-
-Blog.sync()
+const { PORT } = require('./util/config');
+const { connectToDatabase } = require('./util/db');
 
 
-app.get('/api/blogs', async (req, res) => {
-  const blogs = await sequelize.query("SELECT * FROM blogs", { type: QueryTypes.SELECT })
-  res.json(blogs)
-})
+const blogsRouter = require('./controllers/blogs')
 
-app.post('/api/blogs', async (req, res) => {
-  try {
-    const blog = await Blog.create(req.body)
-    console.log(blog.toJSON())
-    return res.json(blog)
-  } catch(error) {
-    return res.status(400).json({ error })
+
+const errorHandler = (error, request, response, next) => {
+
+  console.error(error.message)
+
+  if (error.name === 'TypeError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
-})
 
+next(error)
+};
 
-app.delete('/api/blogs/:id', async (req, res) => {
-  const blog = await Blog.findByPk(req.params.id)
-  if (blog) {
-    await blog.destroy()
-    res.json(`${req.params.id} blog deleted successfully`);
-  } else {
-    res.status(404).end()
-  }
-})
+app.use(express.json());
 
-const PORT = process.env.PORT || 3001
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+app.use('/api/blogs', blogsRouter);
 
+app.use(errorHandler)
 
+const start = async () => {
+  await connectToDatabase()
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
+  })
+}
 
-
-
-
-
-
-
-// const main = async () => {
-//   try {
-//     await sequelize.authenticate()
-//     console.log('Connection has been established successfully.')
-//     const blogs = await sequelize.query("SELECT * FROM blogs", { type: QueryTypes.SELECT })
-//     console.log(blogs)
-
-
-//     sequelize.close()
-//   } catch (error) {
-//     console.error('Unable to connect to the database:', error)
-//   }
-// }
-
-// main()
+start();

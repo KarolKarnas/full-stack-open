@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 const router = require('express').Router();
 const { SECRET } = require('../util/config');
 
@@ -24,8 +24,8 @@ router.get('/', async (req, res, next) => {
 			attributes: { exclude: ['userId'] },
 			include: {
 				model: User,
-				attributes: ['name']
-			}
+				attributes: ['name'],
+			},
 		});
 		res.json(blogs);
 	} catch (error) {
@@ -58,10 +58,18 @@ router.put('/:id', blogFinder, async (req, res, next) => {
 	}
 });
 
-router.delete('/:id', blogFinder, async (req, res, next) => {
+router.delete('/:id', tokenExtractor, blogFinder, async (req, res, next) => {
 	try {
-		await req.blog.destroy();
-		res.json(`${req.params.id} blog deleted successfully`);
+		const user = await User.findByPk(req.decodedToken.id);
+
+		if (user.id === req.blog.userId) {
+			await req.blog.destroy();
+			res.json(`${req.params.id} blog deleted successfully`);
+		}
+
+		else {
+			res.json(`Cannot delete, you are not the creator!`)
+		}
 	} catch (error) {
 		next(error);
 	}

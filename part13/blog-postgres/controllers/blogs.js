@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const router = require('express').Router();
 const { SECRET } = require('../util/config');
-const { Op } = require('sequelize')
+const { Op} = require('sequelize');
 
 const { Blog, User } = require('../models');
 
@@ -21,14 +21,17 @@ const tokenExtractor = (req, res, next) => {
 
 router.get('/', async (req, res, next) => {
 	try {
-		const where = {}
+		let where = {};
 
 		if (req.query.search) {
-			where.title = {
-				[Op.iLike]: `%${req.query.search}%`
+
+			where = {
+				[Op.or]: {
+					author: {[Op.iLike]: `%${req.query.search}%`},
+					title: {[Op.iLike]: `%${req.query.search}%`}
+				}
 			}
 		}
-
 
 		const blogs = await Blog.findAll({
 			attributes: { exclude: ['userId'] },
@@ -36,7 +39,8 @@ router.get('/', async (req, res, next) => {
 				model: User,
 				attributes: ['name'],
 			},
-			where
+			where,
+			order:[ ['likes', 'DESC']]
 		});
 		res.json(blogs);
 	} catch (error) {
@@ -76,10 +80,8 @@ router.delete('/:id', tokenExtractor, blogFinder, async (req, res, next) => {
 		if (user.id === req.blog.userId) {
 			await req.blog.destroy();
 			res.json(`${req.params.id} blog deleted successfully`);
-		}
-
-		else {
-			res.json(`Cannot delete, you are not the creator!`)
+		} else {
+			res.json(`Cannot delete, you are not the creator!`);
 		}
 	} catch (error) {
 		next(error);

@@ -28,7 +28,7 @@ User.init(
 		sequelize,
 		underscored: true,
 		modelName: 'user',
-
+		// timestamps: true
 		// defaultScope: {
 		// 	attributes: { exclude: ['createdAt', 'updatedAt'] },
 		// },

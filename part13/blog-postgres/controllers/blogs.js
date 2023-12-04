@@ -1,36 +1,37 @@
 const jwt = require('jsonwebtoken');
 const router = require('express').Router();
 const { SECRET } = require('../util/config');
-const { Op} = require('sequelize');
+const { Op } = require('sequelize');
 
 const { Blog, User } = require('../models');
 
-const tokenExtractor = (req, res, next) => {
-	const authorization = req.get('authorization');
-	if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-		try {
-			req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
-		} catch {
-			return res.status(401).json({ error: 'token invalid' });
-		}
-	} else {
-		return res.status(401).json({ error: 'token missing' });
-	}
-	next();
-};
+const { tokenExtractor } = require('../util/middleware');
+
+// const tokenExtractor = (req, res, next) => {
+// 	const authorization = req.get('authorization');
+// 	if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+// 		try {
+// 			req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
+// 		} catch {
+// 			return res.status(401).json({ error: 'token invalid' });
+// 		}
+// 	} else {
+// 		return res.status(401).json({ error: 'token missing' });
+// 	}
+// 	next();
+// };
 
 router.get('/', async (req, res, next) => {
 	try {
 		let where = {};
 
 		if (req.query.search) {
-
 			where = {
 				[Op.or]: {
-					author: {[Op.iLike]: `%${req.query.search}%`},
-					title: {[Op.iLike]: `%${req.query.search}%`}
-				}
-			}
+					author: { [Op.iLike]: `%${req.query.search}%` },
+					title: { [Op.iLike]: `%${req.query.search}%` },
+				},
+			};
 		}
 
 		const blogs = await Blog.findAll({
@@ -40,7 +41,7 @@ router.get('/', async (req, res, next) => {
 				attributes: ['name'],
 			},
 			where,
-			order:[ ['likes', 'DESC']]
+			order: [['likes', 'DESC']],
 		});
 		res.json(blogs);
 	} catch (error) {

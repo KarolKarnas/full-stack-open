@@ -163,10 +163,10 @@ const resolvers = {
 			}
 			const newBook = {
 				title: args.title,
-				published: args.published,
 				author: args.author,
-				id: uuid(),
+				published: args.published,
 				genres: args.genres,
+				id: uuid(),
 			};
 			books = books.concat(newBook);
 		},
@@ -188,6 +188,9 @@ const resolvers = {
 const server = new ApolloServer({
 	typeDefs,
 	resolvers,
+	// cors: {
+	// 	origin: ['http://localhost:3000/', 'http://localhost:4000/'],
+	// },
 });
 
 startStandaloneServer(server, {

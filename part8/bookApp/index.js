@@ -178,15 +178,15 @@ const resolvers = {
 				}
 			}
 			if (args.genre) {
-				return await Book.find({})
-					.where(args.genre)
-					.in(root.genres)
-					.populate('author');
+				return await Book.find({ genres: { $in: [args.genre] } }).populate(
+					'author'
+				);
 			}
 			// if (args.genre) {
-			// 	return await Book.find({ genres: { $in: [args.genre] } }).populate(
-			// 		'author'
-			// 	);
+			// 	return await Book.find({})
+			// 		.where(args.genre)
+			// 		.in(root.genres)
+			// 		.populate('author');
 			// }
 			return Book.find({}).populate('author');
 		},
@@ -212,10 +212,12 @@ const resolvers = {
 				});
 			}
 			const author = await Author.findOne({ name: args.author });
+			let newAuthorId;
 			// console.log(author);
 			if (author === null) {
 				// console.log('creating author');
 				const newAuthor = new Author({ name: args.author });
+				newAuthorId = newAuthor._id;
 				try {
 					await newAuthor.save();
 				} catch (error) {
@@ -233,7 +235,7 @@ const resolvers = {
 				title: args.title,
 				published: args.published,
 				genres: args.genres,
-				author: author.id,
+				author: author === null ? newAuthorId : author.id,
 			});
 			// console.log(newBook);
 

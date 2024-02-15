@@ -12,9 +12,11 @@ const Recommendations = (props) => {
 	const { loading: loadingMe, data: dataMe } = useQuery(ME);
 
 	useEffect(() => {
-		if (!loadingMe && dataMe) {
+		if (!loadingMe && dataMe.me) {
+			// console.log(dataMe.me)
 			// console.log(dataMe.me.favoriteGenre);
 			setGenreToSearch(dataMe.me.favoriteGenre);
+			// setGenreToSearch('sf');
 			refetch();
 		}
 	}, [loadingMe, dataMe, refetch]);
@@ -22,6 +24,7 @@ const Recommendations = (props) => {
 	if (!props.show) {
 		return null;
 	}
+
 
 	if (loading && loadingMe) {
 		return <div>loading...</div>;

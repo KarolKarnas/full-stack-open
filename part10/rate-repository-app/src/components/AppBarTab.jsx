@@ -1,6 +1,7 @@
-import { StyleSheet, Pressable } from 'react-native';
+import { StyleSheet } from 'react-native';
 import theme from '../theme';
 import CustomText from './CustomText';
+import { Link } from 'react-router-native';
 
 const styles = StyleSheet.create({
 	pressable: {
@@ -11,15 +12,17 @@ const styles = StyleSheet.create({
 });
 
 const AppBarTab = ({ item }) => {
-	const onPressFunction = () => {
-		console.log(item.text);
-	};
+	// const onPressFunction = () => {
+	// 	console.log(item.text);
+	// };
 	return (
-		<Pressable style={styles.pressable} onPress={onPressFunction}>
-			<CustomText color='white' fontWeight='bold'>
-				{item.text}
-			</CustomText>
-		</Pressable>
+		<Link style={styles.pressable} to={item.path}>
+			{/* <Pressable style={styles.pressable} onPress={onPressFunction}> */}
+				<CustomText color='white' fontWeight='bold'>
+					{item.text}
+				</CustomText>
+			{/* </Pressable> */}
+		</Link>
 	);
 };
 

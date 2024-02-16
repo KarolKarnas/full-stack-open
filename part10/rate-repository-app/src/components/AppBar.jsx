@@ -23,16 +23,24 @@ const styles = StyleSheet.create({
 const tabs = [
 	{
 		id: '1',
-		text: 'press me',
+		text: 'Repositories',
+    path: '/'
 	},
 	{
-		id: '2',
-		text: 'impress you',
+    id: '2',
+		text: 'Sign In',
+    path: '/signin'
 	},
-	{
-		id: '3',
-		text: 'god bless you',
-	},
+	// {
+  //   id: '3',
+	// 	text: 'test dasd dsad',
+  //   path: '/test'
+	// },
+	// {
+  //   id: '4',
+	// 	text: 'test2dasdasd',
+  //   path: '/test2'
+	// },
 ];
 
 const ItemSeparator = () => <View style={styles.separator} />;

@@ -4,12 +4,14 @@ import { StyleSheet, View } from 'react-native';
 import AppBar from './AppBar';
 import { Route, Routes, Navigate } from 'react-router-native';
 import SignIn from './SignIn';
+import theme from '../theme';
 
 const styles = StyleSheet.create({
 	container: {
 		// marginTop: Constants.statusBarHeight + 10,
 		flexGrow: 1,
 		flexShrink: 1,
+		fontFamily: theme.fonts.main
 	},
 	logo: {
 		textTransform: 'uppercase',

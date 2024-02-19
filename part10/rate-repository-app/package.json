@@ -13,6 +13,8 @@
     "@apollo/client": "^3.9.5",
     "@expo/metro-config": "^0.17.4",
     "@expo/webpack-config": "~19.0.1",
+    "@react-native-async-storage/async-storage": "1.21.0",
+    "dotenv": "^16.4.4",
     "expo": "~50.0.6",
     "expo-status-bar": "~1.11.1",
     "formik": "^2.4.5",

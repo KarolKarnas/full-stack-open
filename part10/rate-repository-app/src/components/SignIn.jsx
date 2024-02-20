@@ -16,32 +16,15 @@ const styles = StyleSheet.create({
 	},
 });
 
-const SignIn = () => {
-	const [signIn] = useSignIn();
-	const navigate = useNavigate();
-	// const mySubmit = (values) => console.log(values);
-
-	const onSubmit2 = async (values) => {
-		const { username, password } = values;
-
-		try {
-			const { data } = await signIn({ username, password });
-
-			if (data.authenticate.accessToken) {
-				navigate('/');
-			}
-			// console.log(data.authenticate.accessToken);
-		} catch (e) {
-			console.log(e);
-		}
-	};
+export const SignInContainer = ({ handleOnSubmit }) => {
 	return (
 		<Formik
+			testID='form'
 			initialValues={{ password: '', username: '' }}
-			onSubmit={onSubmit2}
+			onSubmit={handleOnSubmit}
 			validationSchema={validationSchema}
 		>
-			{({ handleChange, handleBlur, handleSubmit, values }) => (
+			{({ handleSubmit }) => (
 				<View style={styles.container}>
 					<FormikTextInput name='username' placeholder='Username' />
 					<FormikTextInput
@@ -55,6 +38,24 @@ const SignIn = () => {
 			)}
 		</Formik>
 	);
+};
+
+const SignIn = () => {
+	const [signIn] = useSignIn();
+	const navigate = useNavigate();
+
+	const handleOnSubmit = async (values) => {
+		const { username, password } = values;
+		try {
+			const { data } = await signIn({ username, password });
+			if (data.authenticate.accessToken) {
+				navigate('/');
+			}
+		} catch (e) {
+			console.log(e);
+		}
+	};
+	return <SignInContainer handleOnSubmit={handleOnSubmit} />;
 };
 
 export default SignIn;

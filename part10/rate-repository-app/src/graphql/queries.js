@@ -17,6 +17,46 @@ export const GET_REPOSITORIES = gql`
 					ratingAverage
 					reviewCount
 					stargazersCount
+					url
+				}
+			}
+		}
+	}
+`;
+
+export const GET_REPOSITORY = gql`
+	query Repository($repositoryId: ID!) {
+		repository(id: $repositoryId) {
+			description
+			forksCount
+			fullName
+			id
+			language
+			ownerAvatarUrl
+			reviewCount
+			ratingAverage
+			stargazersCount
+			url
+		}
+	}
+`;
+export const GET_REVIEWS = gql`
+	query Repository($repositoryId: ID!) {
+		repository(id: $repositoryId) {
+			fullName
+			id
+			reviews {
+				edges {
+					node {
+						id
+						text
+						rating
+						createdAt
+						user {
+							id
+							username
+						}
+					}
 				}
 			}
 		}
@@ -25,9 +65,9 @@ export const GET_REPOSITORIES = gql`
 
 export const ME = gql`
 	query Me {
-  me {
-    id
-    username
-  }
-}
+		me {
+			id
+			username
+		}
+	}
 `;

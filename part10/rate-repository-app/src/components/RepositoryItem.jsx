@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, Button } from 'react-native';
 import theme from '../theme';
 import CustomText from './CustomText';
+import * as Linking from 'expo-linking';
 
 const styles = StyleSheet.create({
 	container: {
@@ -37,7 +38,7 @@ const styles = StyleSheet.create({
 	},
 });
 
-const RepositoryItem = ({ item }) => {
+const RepositoryItem = ({ item, button }) => {
 	const formatThousandNumber = (num) => {
 		if (num > 1000) {
 			return `${(num / 1000).toFixed(1)}k`;
@@ -45,8 +46,10 @@ const RepositoryItem = ({ item }) => {
 		return num;
 	};
 
+	// console.log(item)
+
 	return (
-		<View testID="repositoryItem" style={styles.container}>
+		<View testID='repositoryItem' style={styles.container}>
 			<Image source={{ uri: item.ownerAvatarUrl }} style={styles.avatar} />
 			<View style={styles.infoContainer}>
 				<CustomText fontWeight='bold' fontSize='subheading'>
@@ -80,6 +83,12 @@ const RepositoryItem = ({ item }) => {
 						<CustomText color='textSecondary'>Rating</CustomText>
 					</View>
 				</View>
+				{button ? (
+					<Button
+						onPress={() => Linking.openURL(item.url)}
+						title='Git Repooo'
+					/>
+				) : null}
 			</View>
 		</View>
 	);

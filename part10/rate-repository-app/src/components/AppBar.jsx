@@ -34,6 +34,11 @@ const tabs = [
 		text: 'Sign out',
 		// path: '/signout',
 	},
+	{
+		id: '4',
+		text: 'Add review',
+		path: '/addreview',
+	},
 ];
 const tabs_logout = [
 	{

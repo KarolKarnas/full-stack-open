@@ -51,6 +51,11 @@ const tabs_logout = [
 		text: 'Sign In',
 		path: '/signin',
 	},
+	{
+		id: '5',
+		text: 'Sign Up',
+		path: '/signup',
+	},
 ];
 
 const ItemSeparator = () => <View style={styles.separator} />;

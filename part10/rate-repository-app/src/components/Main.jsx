@@ -8,39 +8,40 @@ import theme from '../theme';
 import SingleRepository from './SingleRepository';
 import AddReview from './AddReview';
 import SignUp from './SignUp';
+import MyReviews from './MyReviews';
 
 const styles = StyleSheet.create({
 	container: {
 		// marginTop: Constants.statusBarHeight + 10,
 		flexGrow: 1,
 		flexShrink: 1,
-		fontFamily: theme.fonts.main
+		fontFamily: theme.fonts.main,
 	},
 	logo: {
 		textTransform: 'uppercase',
-    textAlign: 'center',
-    fontWeight: 'bold'
+		textAlign: 'center',
+		fontWeight: 'bold',
 	},
 });
 
 const Main = () => {
-	
 	return (
 		<View style={styles.container}>
 			<AppBar />
 			{/* <Text style={styles.logo}>Rate Repository Application</Text> */}
 			<Routes>
-        <Route path="/" element={<RepositoryList />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/addreview" element={<AddReview />} />
+				<Route path='/' element={<RepositoryList />} />
+				<Route path='/signin' element={<SignIn />} />
+				<Route path='/signup' element={<SignUp />} />
+				<Route path='/addreview' element={<AddReview />} />
+				<Route path='/myreviews' element={<MyReviews />} />
 				<Route
-          path="/repository/:repoId"
-          element={<SingleRepository />}
-          exact
-        />
-				<Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+					path='/repository/:repoId'
+					element={<SingleRepository />}
+					exact
+				/>
+				<Route path='*' element={<Navigate to='/' replace />} />
+			</Routes>
 		</View>
 	);
 };

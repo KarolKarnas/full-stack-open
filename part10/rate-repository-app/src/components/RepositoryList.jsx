@@ -1,46 +1,105 @@
-import { FlatList, View, Text, StyleSheet, Pressable } from 'react-native';
+import { FlatList, View, StyleSheet, Pressable, TextInput } from 'react-native';
 import RepositoryItem from './RepositoryItem';
 import theme from '../theme';
 import useRepositories from '../hooks/useRepositories';
 import { useNavigate } from 'react-router-native';
+import { useState } from 'react';
+import { Picker } from '@react-native-picker/picker';
+import { filters } from '../utils/constants';
+import { useDebounce } from 'use-debounce';
 
 const styles = StyleSheet.create({
 	separator: {
 		height: 10,
 		backgroundColor: theme.colors.textSecondary,
 	},
+	filterPicker: {
+		backgroundColor: theme.colors.transparent,
+	},
+	searchInput: {
+		borderColor: theme.colors.primary,
+		borderWidth: 1,
+		padding: 10,
+	},
+	searchInputFocus: {
+		borderWidth: 3,
+	}
 });
 
-const ItemSeparator = () => <View style={styles.separator} />;
-
-export const RepositoryListContainer = ({ repositories }) => {
+export const RepositoryListContainer = ({
+	repositories,
+	filter,
+	setFilter,
+	setSearchKeyword,
+}) => {
+	const [isFocused, setIsFocused] = useState(false);
 	const navigate = useNavigate();
-
-
+	
+	const ItemSeparator = () => <View style={styles.separator} />;
 	const renderItem = ({ item }) => (
-    <Pressable onPress={() => navigate(`/repository/${item.id}`)}>
-      <RepositoryItem item={item} />
-    </Pressable>
-  )
+		<Pressable onPress={() => navigate(`/repository/${item.id}`)}>
+			<RepositoryItem item={item} />
+		</Pressable>
+	);
 
 	const repositoryNodes = repositories
 		? repositories.edges.map((edge) => edge.node)
 		: [];
 
 	return (
-		<FlatList
-			data={repositoryNodes}
-			renderItem={renderItem}
-			keyExtractor={(item) => item.id}
-			ItemSeparatorComponent={ItemSeparator}
-		/>
+		<>
+			<Picker
+				style={styles.filterPicker}
+				selectedValue={filter}
+				onValueChange={(itemValue, itemIndex) => setFilter(itemValue)}
+			>
+				<Picker.Item label='Latest repositories' value={filters.latest} />
+				<Picker.Item
+					label='Highest rated repositories'
+					value={filters.highestRated}
+				/>
+				<Picker.Item
+					label='Lowest rated repositories'
+					value={filters.lowestRated}
+				/>
+			</Picker>
+			<FlatList
+				data={repositoryNodes}
+				renderItem={renderItem}
+				keyExtractor={(item) => item.id}
+				ItemSeparatorComponent={ItemSeparator}
+				ListHeaderComponent={
+					<TextInput
+					style={[
+						styles.searchInput,
+						isFocused && styles.searchInputFocus
+					]}
+					onFocus={() => setIsFocused(true)}
+						placeholder='search'
+						onChangeText={(value) => setSearchKeyword(value)}
+					/>
+				}
+			/>
+		</>
 	);
 };
 
 const RepositoryList = () => {
-	const { repositories } = useRepositories();
+	const [filter, setFilter] = useState(filters.lowestRated);
+	const [searchKeyword, setSearchKeyword] = useState('');
+	const [value] = useDebounce(searchKeyword, 500);
 
-	return <RepositoryListContainer repositories={repositories} />;
+	const { repositories } = useRepositories({ ...filter, searchKeyword: value });
+
+	return (
+		<RepositoryListContainer
+			repositories={repositories}
+			filter={filter}
+			setFilter={setFilter}
+			searchKeyword={searchKeyword}
+			setSearchKeyword={setSearchKeyword}
+		/>
+	);
 };
 
 export default RepositoryList;

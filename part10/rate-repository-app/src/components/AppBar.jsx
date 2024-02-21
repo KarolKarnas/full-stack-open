@@ -2,9 +2,7 @@ import { View, StyleSheet, FlatList } from 'react-native';
 import Constants from 'expo-constants';
 import theme from '../theme';
 import AppBarTab from './AppBarTab';
-import useSignOut from '../hooks/useSignOut';
 import useMe from '../hooks/useMe';
-import { useEffect, useState } from 'react';
 
 const styles = StyleSheet.create({
 	container: {
@@ -38,6 +36,11 @@ const tabs = [
 		id: '4',
 		text: 'Add review',
 		path: '/addreview',
+	},
+	{
+		id: '6',
+		text: 'My reviews',
+		path: '/myreviews',
 	},
 ];
 const tabs_logout = [

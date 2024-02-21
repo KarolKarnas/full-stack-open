@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
 	},
 	searchInputFocus: {
 		borderWidth: 3,
-	}
+	},
 });
 
 export const RepositoryListContainer = ({
@@ -31,10 +31,11 @@ export const RepositoryListContainer = ({
 	filter,
 	setFilter,
 	setSearchKeyword,
+	onEndReach,
 }) => {
 	const [isFocused, setIsFocused] = useState(false);
 	const navigate = useNavigate();
-	
+
 	const ItemSeparator = () => <View style={styles.separator} />;
 	const renderItem = ({ item }) => (
 		<Pressable onPress={() => navigate(`/repository/${item.id}`)}>
@@ -70,15 +71,14 @@ export const RepositoryListContainer = ({
 				ItemSeparatorComponent={ItemSeparator}
 				ListHeaderComponent={
 					<TextInput
-					style={[
-						styles.searchInput,
-						isFocused && styles.searchInputFocus
-					]}
-					onFocus={() => setIsFocused(true)}
+						style={[styles.searchInput, isFocused && styles.searchInputFocus]}
+						onFocus={() => setIsFocused(true)}
 						placeholder='search'
 						onChangeText={(value) => setSearchKeyword(value)}
 					/>
 				}
+				onEndReached={onEndReach}
+				onEndReachedThreshold={0.5}
 			/>
 		</>
 	);
@@ -89,7 +89,15 @@ const RepositoryList = () => {
 	const [searchKeyword, setSearchKeyword] = useState('');
 	const [value] = useDebounce(searchKeyword, 500);
 
-	const { repositories } = useRepositories({ ...filter, searchKeyword: value });
+	const { repositories, fetchMore } = useRepositories({
+		...filter,
+		searchKeyword: value,
+		first: 1,
+	});
+
+	const onEndReach = () => {
+		fetchMore();
+	};
 
 	return (
 		<RepositoryListContainer
@@ -98,6 +106,7 @@ const RepositoryList = () => {
 			setFilter={setFilter}
 			searchKeyword={searchKeyword}
 			setSearchKeyword={setSearchKeyword}
+			onEndReach={onEndReach}
 		/>
 	);
 };

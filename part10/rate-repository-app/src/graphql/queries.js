@@ -5,11 +5,15 @@ export const GET_REPOSITORIES = gql`
 		$orderBy: AllRepositoriesOrderBy
 		$orderDirection: OrderDirection
 		$searchKeyword: String
+		$first: Int
+		$after: String
 	) {
 		repositories(
 			orderBy: $orderBy
 			orderDirection: $orderDirection
 			searchKeyword: $searchKeyword
+			first: $first
+			after: $after
 		) {
 			edges {
 				node {
@@ -27,6 +31,12 @@ export const GET_REPOSITORIES = gql`
 					stargazersCount
 					url
 				}
+				cursor
+			}
+			pageInfo {
+				endCursor
+				startCursor
+				hasNextPage
 			}
 		}
 	}
@@ -49,11 +59,11 @@ export const GET_REPOSITORY = gql`
 	}
 `;
 export const GET_REVIEWS = gql`
-	query Repository($repositoryId: ID!) {
+	query Repository($repositoryId: ID!, $first: Int, $after: String) {
 		repository(id: $repositoryId) {
 			fullName
 			id
-			reviews {
+			reviews(first: $first, after: $after) {
 				edges {
 					node {
 						id
@@ -65,7 +75,13 @@ export const GET_REVIEWS = gql`
 							username
 						}
 					}
+					cursor
 				}
+				pageInfo {
+        endCursor
+        startCursor
+        hasNextPage
+      }	
 			}
 		}
 	}
@@ -77,8 +93,8 @@ export const ME = gql`
 			id
 			username
 			reviews @include(if: $includeReviews) {
-        edges {
-          node {
+				edges {
+					node {
 						id
 						text
 						rating
@@ -88,9 +104,41 @@ export const ME = gql`
 							id
 							username
 						}
-          }
-        }
-      }
+					}
+				}
+			}
 		}
 	}
 `;
+
+// export const GET_REPOSITORIES = gql`
+// 	query Repositories(
+// 		$orderBy: AllRepositoriesOrderBy
+// 		$orderDirection: OrderDirection
+// 		$searchKeyword: String
+// 	) {
+// 		repositories(
+// 			orderBy: $orderBy
+// 			orderDirection: $orderDirection
+// 			searchKeyword: $searchKeyword
+// 		) {
+// 			edges {
+// 				node {
+// 					id
+// 					name
+// 					forksCount
+// 					fullName
+// 					createdAt
+// 					description
+// 					language
+// 					ownerAvatarUrl
+// 					ownerName
+// 					ratingAverage
+// 					reviewCount
+// 					stargazersCount
+// 					url
+// 				}
+// 			}
+// 		}
+// 	}
+// `;
